@@ -1,7 +1,4 @@
-
-function ABI() {
-
-  const ABI = [
+const ABI = [
     {
       "inputs": [],
       "name": "getPosts",
@@ -90,8 +87,6 @@ function ABI() {
       "type": "function"
     }
   ];
-
-};
 
 export default ABI;
 
