@@ -6,6 +6,7 @@ import AddPostForm from './components/AddPostForm';
 import PostsDisplay from './components/PostsDisplay';
 import Sidebar from './components/Sidebar';
 import ABI from './ABI';
+import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 const ethers = require('ethers');
 
 function App() {
@@ -22,10 +23,10 @@ function App() {
   };
 
 
-  // Check if MetaMask is available
-  useEffect(() => {
+  
+  useEffect(() => { 
     const { ethereum } = window;
-    if (!ethereum) {
+    if (!ethereum) { // Check if MetaMask is available
       console.log("Make sure you have MetaMask installed!");
       return;
     } else {
@@ -39,8 +40,8 @@ function App() {
     setCurrentAccount(account);
   };
 
-  // Fetch posts from the blockchain
-  const fetchPosts = async () => {
+  const fetchPosts = async () => {   // Fetch posts from the blockchain
+
     if (typeof window.ethereum !== 'undefined') {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(PostcontractAddress, ABI, provider);
@@ -53,8 +54,8 @@ function App() {
     }    
   };
 
-  // Call this function when the user clicks the "Write Post" button
-  const writePost = async () => {
+  const writePost = async () => {   // Call this function when the user clicks the "Write Post" button
+
     if (!newPost.title || !newPost.content) return;
     if (typeof window.ethereum !== 'undefined') {
       await requestAccount();
@@ -87,22 +88,42 @@ function App() {
     const handleDisconnect = () => {
 
       }
+
+  useEffect(() => {
+    if (currentAccount) {
+      setIsConnected(true);
+      fetchPosts();
+    }
+  }, [currentAccount]);
       
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <Sidebar show={sidebarOpen} onAddPost={handleAddPost} onFeed={handleFeed} onProfile={handleProfile} onDisconnect={handleDisconnect} />
-      <div style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px' }}>
-        <button onClick={toggleSidebar} style={{ fontSize: '30px', cursor: 'pointer', backgroundColor: 'transparent', border: 'none', position: 'absolute', top: '20px', left: sidebarOpen ? '250px' : '20px', zIndex: '2' }}>
-          ☰
-        </button>
-      <Container>
-        <h1>A Decentralized Social Network</h1>
-        {!isConnected && <ConnectWalletButton onConnect={requestAccount} />}
-        <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost} />
-        <PostsDisplay posts={posts} fetchPosts={fetchPosts}/>
-      </Container>
-    </div>
-    </div>
+    <Router>
+      <div style={{ display: 'flex', height: '100vh' }}>
+        <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px' }}>
+          <button onClick={toggleSidebar} style={{ fontSize: '30px', cursor: 'pointer', backgroundColor: 'transparent', border: 'none', position: 'absolute', top: '20px', left: sidebarOpen ? '250px' : '20px', zIndex: '2' }}>
+            ☰
+          </button>
+          <Container>
+            <h1>A Decentralized Social Network</h1>
+            <Routes>
+              <Route path="/connect">
+                {!isConnected ? <ConnectWalletButton onConnect={requestAccount} /> : <Navigate to="/posts" />}
+              </Route>
+              <Route path="/add-post">
+                {isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost} /> : <Navigate to="/connect" />}
+              </Route>
+              <Route path="/posts">
+                {isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />}
+              </Route>
+              <Route path="/">
+                {isConnected ? <Navigate to="/posts" /> : <Navigate to="/connect" />}
+              </Route>
+            </Routes>
+          </Container>
+        </div>
+      </div>
+    </Router>
   );
 
 };
