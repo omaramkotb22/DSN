@@ -107,18 +107,10 @@ function App() {
           <Container>
             <h1>A Decentralized Social Network</h1>
             <Routes>
-              <Route path="/connect">
-                {!isConnected ? <ConnectWalletButton onConnect={requestAccount} /> : <Navigate to="/posts" />}
-              </Route>
-              <Route path="/add-post">
-                {isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost} /> : <Navigate to="/connect" />}
-              </Route>
-              <Route path="/posts">
-                {isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />}
-              </Route>
-              <Route path="/">
-                {isConnected ? <Navigate to="/posts" /> : <Navigate to="/connect" />}
-              </Route>
+              <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} /> : <Navigate to="/posts" />} />
+              <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost} /> : <Navigate to="/connect" />} />
+              <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
+              <Route path="/" element={isConnected ? <Navigate to="/posts" /> : <Navigate to="/connect" />} />
             </Routes>
           </Container>
         </div>
