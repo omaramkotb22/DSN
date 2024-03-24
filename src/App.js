@@ -11,6 +11,8 @@ import { ComposeClient } from '@composedb/client';
 import models from "./models/runtime-posts-composite.json"
 import ABI from './ABI';
 import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate } from 'react-router-dom';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { DIDsessions } from 'did-session';
 const ethers = require('ethers');
 
 
@@ -30,7 +32,7 @@ function App() {
     const fetchData = async () => {
       const composedb = new ComposeClient({
         ceramic: 'http://localhost:7007',
-        definition: models // make sure 'models' is defined and imported
+        definition: models 
       });
       
       const exec = await composedb.executeQuery(`
@@ -103,7 +105,40 @@ function App() {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(PostcontractAddress, ABI, signer);
       const transaction = await contract.writePost(newPost.title, newPost.content);
-      
+      const composedb = new ComposeClient({
+        ceramic: 'http://localhost:7007',
+        definition: models 
+      });
+      const client = new ApolloClient({
+        uri: 'http://localhost:5005/graphql', 
+        cache: new InMemoryCache()
+      });
+      console.log("Client Works!");
+      const postMutation = gql`
+      mutation CreatePost($PostReference: String!, $PostLikes: Int!) {
+        createPosts(input: {
+          content: {    
+            PostReference: $PostReference,
+            PostLikes: $PostLikes
+          }
+        }) {
+          document {
+            PostReference
+            PostLikes
+          }       
+        }
+      }
+    `;
+      console.log("Mutation Works!"); 
+      client.mutate({ 
+        mutation: postMutation,
+        variables: {
+          PostReference: transaction.hash,
+          PostLikes: 0
+        }
+            }).then((data) => console.log(data)).catch((error) => console.error(error));
+              
+
       await transaction.wait();
       setNewPost({ title: '', content: '' }); // Reset form after submission
       fetchPosts(); // Fetch all posts again to update UI
