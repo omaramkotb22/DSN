@@ -1,0 +1,5 @@
+type Posts @createModel( description: "A Model that Maps Likes to Posts"){
+
+    PostReference: String! @string(maxLength: 100),
+    PostLikes: Int! @int
+}

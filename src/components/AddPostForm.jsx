@@ -1,7 +1,8 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 
-function AddPostForm({ newPost, setNewPost, onWritePost }) {
+function AddPostForm({ newPost, setNewPost, onWritePost}) { // onWritePost is in App.js
+  
   return (
     <Form>
       <Form.Group className="mb-3" controlId="formTitle">

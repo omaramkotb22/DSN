@@ -1,5 +1,6 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
 
 function Sidebar({ show, onAddPost, onFeed, onProfile, onDisconnect }) {
     return (
@@ -17,12 +18,15 @@ function Sidebar({ show, onAddPost, onFeed, onProfile, onDisconnect }) {
             paddingTop: '20px',
             boxShadow: '2px 0 5px 0 rgba(0,0,0,0.5)'
         }}>
-            <Nav className="flex-column">
-                <Nav.Link onClick={onAddPost}>Add Post</Nav.Link>
-                <Nav.Link onClick={onFeed}>Feed</Nav.Link>
-                <Nav.Link onClick={onProfile}>Profile</Nav.Link>
-                <Nav.Link onClick={onDisconnect}>Disconnect Wallet</Nav.Link>
+
+            <Nav className='flex-column'>
+                <NavLink to="/add-post" onClick={onAddPost}>Add Post</NavLink>
+                <NavLink to="/posts" onClick={onFeed}>Feed</NavLink>
+                <NavLink to="/profile" onClick={onProfile}>Profile</NavLink>
+                <NavLink to="/connect" onClick={onDisconnect}>Disconnect Wallet</NavLink>
             </Nav>
+
+        
         </div>
     );
 }
