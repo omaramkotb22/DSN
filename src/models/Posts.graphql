@@ -1,5 +1,8 @@
-type Posts @createModel( description: "A Model that Maps Likes to Posts"){
-
-    PostReference: String! @string(maxLength: 100),
+type Posts @createModel( description: "A Model that Maps Likes to Posts")
+    @createIndex( fields: [{path: "PostReference"}])
+{
+    PostReference: String! @string( maxLength: 100)
     PostLikes: Int! @int
 }
+
+

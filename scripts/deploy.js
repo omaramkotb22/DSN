@@ -28,6 +28,8 @@ async function main() {
   const post = await postContract.deploy();
   await post.waitForDeployment();
   console.log("PostContract deployed to:", post.target);
+  
+  
 }
 
 // We recommend this pattern to be able to use async/await everywhere

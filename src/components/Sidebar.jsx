@@ -2,31 +2,49 @@ import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 
-function Sidebar({ show, onAddPost, onFeed, onProfile, onDisconnect }) {
+function Sidebar({ show, onAddPost, onFeed, onProfile, onCommunities }) {
+    const circleSize = 200; // The size of the circular menu
     return (
         <div style={{
-            transform: show ? 'translateX(0)' : 'translateX(-100%)',
+            transform: show ? 'scale(1)' : 'scale(0)',
+            transformOrigin: 'top left',
             transition: 'transform 0.3s ease',
-            width: '250px',
-            height: '100vh',
+            width: `${circleSize}px`,
+            height: `${circleSize}px`,
             position: 'fixed',
             zIndex: '1',
             top: '0',
             left: '0',
-            backgroundColor: '#f8f9fa',
-            overflowX: 'hidden',
-            paddingTop: '20px',
-            boxShadow: '2px 0 5px 0 rgba(0,0,0,0.5)'
+            backgroundColor: 'transparent', // Making background transparent
+            overflow: 'hidden',
+            borderRadius: '50%', // Making it circular
+            clipPath: 'circle(50%)', // Clipping to a quarter circle
         }}>
-
-            <Nav className='flex-column'>
-                <NavLink to="/add-post" onClick={onAddPost}>Add Post</NavLink>
-                <NavLink to="/posts" onClick={onFeed}>Feed</NavLink>
-                <NavLink to="/profile" onClick={onProfile}>Profile</NavLink>
-                <NavLink to="/connect" onClick={onDisconnect}>Disconnect Wallet</NavLink>
+            <Nav className='flex-column' style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: `${circleSize}px`,
+                height: `${circleSize}px`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <NavLink to="/profile" onClick={onProfile} style={{margin: '10px'}}>
+                    <img src="https://img.icons8.com/material-rounded/96/228BE6/user-male.png" alt="Profile" style={{width: '50px', height: '50px'}} />
+                </NavLink>
+                <NavLink to="/posts" onClick={onFeed} style={{margin: '10px'}}>
+                    <img src="https://img.icons8.com/material-rounded/96/228BE6/news.png" alt="Feed" style={{width: '50px', height: '50px'}} />
+                </NavLink>
+                <NavLink to="/add-post" onClick={onAddPost} style={{margin: '10px'}}>
+                    <img src="https://img.icons8.com/material-rounded/96/228BE6/plus--v1.png" alt="Add Post" style={{width: '50px', height: '50px'}} />
+                </NavLink>
+                <NavLink to="/communities" style={{margin: '10px'}} onClick={onCommunities} >
+                    <img src="https://img.icons8.com/material-rounded/96/228BE6/share-2.png" alt="Communities" style={{width: '50px', height: '50px'}} />
+                </NavLink> {/* Assuming you have a route for communities */}
             </Nav>
-
-        
         </div>
     );
 }
