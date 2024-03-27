@@ -2,7 +2,8 @@ import {React, useEffect, useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ApolloClient, gql, InMemoryCache, useMutation } from '@apollo/client';
 import { ComposeClient } from '@composedb/client';
-import models from '../models/runtime-posts-composite.json';
+import models from "../models/posts-schema-1-1-runtime-composite.json"
+
 import { ethers } from 'ethers';
 import PostsABI from '../ABIs/PostsABI';
 
@@ -27,7 +28,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     //     const queryResult = composeClient.executeQuery(`
     //     query TheWholeThing{
     //         postsIndex(first: 100) {
-    //         edges{
+    //         edges {
     //           node {
     //             PostLikes
     //             PostReference
@@ -40,6 +41,37 @@ function PostsDisplay({ posts, fetchPosts }) {
 
 
     // }
+    
+    const getLikes = async () => {
+        // TODO: Add index to the main idea
+        const query = gql`
+        query GetPostLikes{
+            postStorageIndex(
+                filters:
+                {
+                where:{
+                    PostHash: {
+                    equalTo: "SamplePostHash"
+                    }
+                }
+                }
+                first:1){
+                    edges {
+                node {
+                    PostHash
+                    PostLikesHash
+                }
+                }
+            }
+}
+        `;
+        const result = await client.query({
+            query});
+        console.log(result.data);
+    }
+
+
+    
     
 
 
@@ -66,10 +98,12 @@ function PostsDisplay({ posts, fetchPosts }) {
         });
         try {
             const tx = await postContract.likePost(index, !liked, signature);
-            await tx.wait();  // Wait for the transaction to be mined
-    
+            await tx.wait();  // Wait for the Signature to be confirmed
+            console.log('Transaction successful:', tx.hash);
+            
+            
             // If the transaction is successful, update the UI accordingly
-            const newLikeCounts = [...likeCounts]; // Array that contains the likes 
+            const newLikeCounts = [...likeCounts];
             if (!liked) {
                 newLikeCounts[index] += 1; // Increment the like count by 1
             } else {

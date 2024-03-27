@@ -7,7 +7,7 @@ import PostsDisplay from './components/PostsDisplay';
 import Sidebar from './components/Sidebar';
 import Profile from './components/Profile';
 import { ComposeClient } from '@composedb/client';
-import models from "./models/runtime-posts-composite.json"
+import models from "./models/posts-schema-1-1-runtime-composite.json"
 import PostsABI from './ABIs/PostsABI';
 import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
@@ -93,39 +93,39 @@ function App() {
         uri: 'http://localhost:5005/graphql', 
         cache: new InMemoryCache()
       });
-
       const postMutation = gql`
-      mutation CreatePost($PostReference: String!, $PostLikes: Int!) {
-        createPosts(input: {
+      mutation CreatePost($PostHash: String!, $PostLikesHash: [String!]!) {
+        createPostStorage(input: {
           content: {    
-            PostReference: $PostReference,
-            PostLikes: $PostLikes
+            PostHash: $PostHash,
+            PostLikesHash: $PostLikesHash
           }
         }) {
           document {
-            PostReference
-            PostLikes
+            PostHash
+            PostLikesHash
           }       
         }
       }
     `;
-      console.log("Mutation Works!"); 
       client.mutate({ 
         mutation: postMutation,
         variables: {
-          PostReference: transaction.hash,
-          PostLikes: 0
+          PostHash: transaction.hash,
+          PostLikesHash: []
         }
-            }).then((data) => console.log(data)).catch((error) => console.error(error));
-              
-
+      }).then((data) => console.log(data)).catch((error) => console.error(error));
+      
       await transaction.wait();
+      console.log("Mutation Works!"); 
+
       setNewPost({ title: '', content: '' }); // Reset form after submission
       fetchPosts(); // Fetch all posts again to update UI
     }
   };
 
-    // Functions for handling sidebar actions
+
+
 
   useEffect(() => {
     if (currentAccount) {

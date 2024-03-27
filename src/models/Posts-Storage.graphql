@@ -1,0 +1,30 @@
+type PostStorage @createModel(description: "A Model that Maps Likes to Posts")
+    @createIndex(fields: [{path: "PostHash"}])
+{
+    PostHash: String! @string(maxLength: 100)
+    PostLikesHash: [String!]! @list(maxLength: 10000) @string(maxLength: 100)
+}
+
+
+input PostFiltersInput {
+  PostHash: StringFilterInput
+  PostLikesHash: StringListFilterInput
+}
+
+input StringFilterInput {
+  eq: String
+  ne: String
+  in: [String]
+  nin: [String]
+  contains: String
+  ncontains: String
+}
+
+input StringListFilterInput {
+  eq: [String]
+  ne: [String]
+  contains: [String]
+  ncontains: [String]
+  in: [[String]]
+  nin: [[String]]
+}
