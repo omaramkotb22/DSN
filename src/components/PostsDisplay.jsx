@@ -12,8 +12,16 @@ function PostsDisplay({ posts, fetchPosts }) {
 
     useEffect(() => {
         fetchPosts();
-        setLikeCounts(Array(posts.length).fill(0));
-        console.log('Posts:', posts[0]);
+        const fetchLikes = async () => {
+            const likeCounts = await posts.map((post) => getLikeForAPost(post[0].toHexString()));
+            const likes = await Promise.all(likeCounts);
+            setLikeCounts(likes);
+        };
+
+        if (posts.length > 0) {
+            fetchLikes();
+        }
+
     }, [posts.length]);
     const client = new ApolloClient({
         uri: 'http://localhost:5005/graphql', 
@@ -27,21 +35,22 @@ function PostsDisplay({ posts, fetchPosts }) {
     });
 
     
-    const getLikes = async (hash) => { // Returns Length of the Likes array (Number of likes on a post)
+    const getLikeForAPost = async (postID) => { // Returns Length of the Likes array (Number of likes on a post)
+        console.log("Post ID:", postID);
         const query = gql`
-        query GetPostLikes($hash: String!){
-            postStorageIndex(
+        query GetPostLikes($input: String!){
+            postSchema_3Index(
                 filters: {
                 where:{
-                    PostHash: {
-                    equalTo: $hash
+                    PostID: {
+                    equalTo: $input
                     }
                 }
                 }
                 first:1){
                     edges {
                 node {
-                    PostHash
+                    PostID
                     PostLikesHash
                 }
                 }
@@ -51,13 +60,15 @@ function PostsDisplay({ posts, fetchPosts }) {
         try {
             const result = await client.query({
                 query,
-                variables: {hash}
+                variables: {input: postID}
             });
+            console.log("Post Likes:", result.data.postSchema_3Index.edges[0].node.PostLikesHash.length);
     
             // Check if there are edges and a node present
-            if (result.data.postStorageIndex.edges.length > 0 && result.data.postStorageIndex.edges[0].node) {
-                const likeCounts = result.data.postStorageIndex.edges[0].node.PostLikesHash.length;
+            if (result.data.postSchema_3Index.edges.length > 0 && result.data.postSchema_3Index.edges[0].node) {
+                const likeCounts = result.data.postSchema_3Index.edges[0].node.PostLikesHash.length;
                 return likeCounts;
+
             } else {
                 // Return 0 if there are no edges or the node is not present
                 return 0;
@@ -141,7 +152,6 @@ function PostsDisplay({ posts, fetchPosts }) {
                         <Card.Footer style={{ marginTop: '15px' }}>
                             <small className="text-muted">Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
                             {/* <Button variant="link" onClick={() => console.log('Author:', post.author)}>Author</Button> */}
-                            <small className='text-muted'>Hash: {post.postHash}</small>
                         </Card.Footer>
                     </Card.Body>
                 </Card>
