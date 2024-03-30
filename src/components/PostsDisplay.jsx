@@ -13,6 +13,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     useEffect(() => {
         fetchPosts();
         setLikeCounts(Array(posts.length).fill(0));
+        console.log(posts[0][0]);
     }, [posts.length]);
     const client = new ApolloClient({
         uri: 'http://localhost:5005/graphql', 
@@ -24,34 +25,16 @@ function PostsDisplay({ posts, fetchPosts }) {
         ceramic: 'http://localhost:7007',
         definition: models
     });
-    // const handleLikeIncOnDatabase = async (address) => {
-    //     const queryResult = composeClient.executeQuery(`
-    //     query TheWholeThing{
-    //         postsIndex(first: 100) {
-    //         edges {
-    //           node {
-    //             PostLikes
-    //             PostReference
-    //           }
-    //         }
-    //       }
-    //     }`
-    //       );
-        
 
-
-    // }
     
-    const getLikes = async () => {
-        // TODO: Add index to the main idea
+    const getLikes = async (hash) => { // Returns Length of the Likes array (Number of likes on a post)
         const query = gql`
-        query GetPostLikes{
+        query GetPostLikes($hash: String!){
             postStorageIndex(
-                filters:
-                {
+                filters: {
                 where:{
                     PostHash: {
-                    equalTo: "SamplePostHash"
+                    equalTo: $hash
                     }
                 }
                 }
@@ -63,17 +46,28 @@ function PostsDisplay({ posts, fetchPosts }) {
                 }
                 }
             }
-}
+        }
         `;
-        const result = await client.query({
-            query});
-        console.log(result.data);
-    }
-
-
+        try {
+            const result = await client.query({
+                query,
+                variables: {hash}
+            });
     
-    
-
+            // Check if there are edges and a node present
+            if (result.data.postStorageIndex.edges.length > 0 && result.data.postStorageIndex.edges[0].node) {
+                const likeCounts = result.data.postStorageIndex.edges[0].node.PostLikesHash.length;
+                return likeCounts;
+            } else {
+                // Return 0 if there are no edges or the node is not present
+                return 0;
+            }
+        } catch (error) {
+            console.error("Error fetching post likes:", error);
+            // Return 0 in case of any errors during the query execution
+            return 0;
+        }
+    };
 
     // useEffect(() => {
     //     handleLikeIncOnDatabase("0x49d45077b3c2ef2ede10458a1a4aa950c500f17866344600b5aab3c6c19508e2");
@@ -85,7 +79,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     const [liked, setLiked] = useState(false);
 
 
-    const postContractAddress = '0x85af4F5a72f5c78E1B5E233e35f49d51EBcbFC31';
+    const postContractAddress = '0xA8bD1a6BD52a06183a8AE01d95b7f10D76B9A7b4';
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = web3Provider.getSigner();
     const postContract = new ethers.Contract(postContractAddress, PostsABI, signer);
@@ -100,6 +94,7 @@ function PostsDisplay({ posts, fetchPosts }) {
             const tx = await postContract.likePost(index, !liked, signature);
             await tx.wait();  // Wait for the Signature to be confirmed
             console.log('Transaction successful:', tx.hash);
+            console.log('Transaction:', tx);
             
             
             // If the transaction is successful, update the UI accordingly
@@ -146,6 +141,7 @@ function PostsDisplay({ posts, fetchPosts }) {
                         <Card.Footer style={{ marginTop: '15px' }}>
                             <small className="text-muted">Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
                             {/* <Button variant="link" onClick={() => console.log('Author:', post.author)}>Author</Button> */}
+                            <small className='text-muted'>Hash: {post.postHash}</small>
                         </Card.Footer>
                     </Card.Body>
                 </Card>

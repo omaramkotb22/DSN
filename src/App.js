@@ -17,10 +17,11 @@ const ethers = require('ethers');
 
 function App() {
   
-  const PostcontractAddress = "0x85af4F5a72f5c78E1B5E233e35f49d51EBcbFC31";
+  const PostcontractAddress = "0xA8bD1a6BD52a06183a8AE01d95b7f10D76B9A7b4";
   const [currentAccount, setCurrentAccount] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
+  const [hashList, setHashList] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -89,6 +90,7 @@ function App() {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(PostcontractAddress, PostsABI, signer);
       const transaction = await contract.writePost(newPost.title, newPost.content);
+
       const client = new ApolloClient({
         uri: 'http://localhost:5005/graphql', 
         cache: new InMemoryCache()
@@ -123,7 +125,6 @@ function App() {
       fetchPosts(); // Fetch all posts again to update UI
     }
   };
-
 
 
 
