@@ -2,7 +2,7 @@ import {React, useEffect, useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ApolloClient, gql, InMemoryCache, useMutation } from '@apollo/client';
 import { ComposeClient } from '@composedb/client';
-import models from "../models/posts-schema-1-1-runtime-composite.json"
+import models from "../models/runtime-PostSchema_3-composite.json"
 
 import { ethers } from 'ethers';
 import PostsABI from '../ABIs/PostsABI';
@@ -13,7 +13,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     useEffect(() => {
         fetchPosts();
         setLikeCounts(Array(posts.length).fill(0));
-        console.log(posts[0][0]);
+        console.log('Posts:', posts[0]);
     }, [posts.length]);
     const client = new ApolloClient({
         uri: 'http://localhost:5005/graphql', 

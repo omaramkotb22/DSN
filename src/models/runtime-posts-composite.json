@@ -1,1 +1,0 @@
-{"models":{"Posts":{"interface":false,"implements":[],"id":"kjzl6hvfrbw6c5popxjr3kp43hobsxipk9ajeivzg10l2hkclym9ixagd9s2itw","accountRelation":{"type":"list"}}},"objects":{"Posts":{"PostLikes":{"type":"integer","required":true},"PostReference":{"type":"string","required":true}}},"enums":{},"accountData":{"postsList":{"type":"connection","name":"Posts"}}}

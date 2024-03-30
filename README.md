@@ -34,7 +34,15 @@ In the Terminal:
 
 - Command to create your Composite
     
-    ```composedb composite:create Posts-schema-1.graphql --output=posts-schema-1-composite.json --did-private-key=your-private-key```
+    ```composedb composite:create PostSchema_2.graphql --output=PostSchema_2-composite.json --did-private-key=your-private-key```
+
+- Command to deploy your Composite
+    ``` composedb composite:deploy --output=PostSchema_2-composite.json --ceramic-url=http://localhost:7007 --did-private-key=your-private-key ```
+
+- Command to compile your Composite
+
+    ``` composedb composite:compile PostSchema_2-composite.json runtime-PostSchema-composite.json ```
+￼
 - Command to start the GraphQL Server
 
     ``` composedb graphql:server --ceramic-url=http://localhost:7007 --graphiql runtime-post-schema-composite.json --did-private-key=your-private-key --port=5005```

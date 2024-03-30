@@ -1,13 +1,13 @@
-type PostStorage @createModel(description: "A Model that Maps Likes to Posts")
-    @createIndex(fields: [{path: "PostHash"}])
+type PostSchema_3 @createModel(description: "A Model that Maps Likes to Posts")
+    @createIndex(fields: [{path: "PostID"}])
 {
-    PostHash: String! @string(maxLength: 100)
+    PostID: String! @string(maxLength: 100)
     PostLikesHash: [String!]! @list(maxLength: 10000) @string(maxLength: 100)
 }
 
 
-input PostFiltersInput {
-  PostHash: StringFilterInput
+input PostSchemaFiltersInput {
+  PostID: StringFilterInput
   PostLikesHash: StringListFilterInput
 }
 

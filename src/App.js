@@ -7,7 +7,7 @@ import PostsDisplay from './components/PostsDisplay';
 import Sidebar from './components/Sidebar';
 import Profile from './components/Profile';
 import { ComposeClient } from '@composedb/client';
-import models from "./models/posts-schema-1-1-runtime-composite.json"
+import models from "./models/runtime-PostSchema_3-composite.json"
 import PostsABI from './ABIs/PostsABI';
 import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
