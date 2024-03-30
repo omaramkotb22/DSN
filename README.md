@@ -9,11 +9,13 @@
 - yarn
 
 
-## To Run the Application
+## To Run the Whole Stack
 
 In the Terminal: 
 
 - Clone Repository
+
+``` git clone ```
 
 ### Starting the Database
 - Command to install Ceramic's CLI: 
@@ -39,4 +41,33 @@ In the Terminal:
 
 
 
+### Smart Contracts
+
+
+- To Compile the Smart Contracts Run in the root dierectory the following command:
+
+- For some reason, the most recent ethers does not work well with react-routers, for this I have to change from `ethers@6.0.2` to `ethers@5.7.2` when I need to run the React Application.
+    
+    ``` npx hardhat compile ```
+
+- To Deploy the Smart Contract on Sepolia Testnet: 
+    - Visit www.Alchemy.com
+    - Login
+    - Create new Project
+    -  Run the following command from the root directory
+        
+        ```npx hardhat run scripts/deploy.js --network sepolia```
+
+        Expected Output:
+        
+        ```PostContract deployed to: address_to_be_placed_as_the_contract_address```
+
+
+
+
+### React Application
+
+- In the Root Directory Run Command: 
+
+``` yarn start ```
 
