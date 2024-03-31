@@ -16,7 +16,7 @@ contract PostContract {
 
     Post[] public posts;
 
-    uint256 private lastPostId = 0; 
+    uint256 private lastPostId = 0;
 
     event PostWritten(uint256 indexed postId, address indexed author); // Event to notify when a post is written
     event PostLiked(uint256 indexed postId, address indexed liker); // Event to notify when a post is liked
@@ -27,6 +27,10 @@ contract PostContract {
         posts.push(newPost);
         
         emit PostWritten(lastPostId, msg.sender);
+    }
+
+    function getLastPostId() public view returns (uint256) {
+        return lastPostId;
     }
 
     function getPosts() public view returns (Post[] memory) {

@@ -17,7 +17,7 @@ const ethers = require('ethers');
 
 function App() {
   
-  const PostcontractAddress = "0xA8bD1a6BD52a06183a8AE01d95b7f10D76B9A7b4";
+  const PostcontractAddress = "0x1f982BB004E706381e5BB4DBd412ec7363D4b02A";
   const [currentAccount, setCurrentAccount] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
@@ -32,7 +32,7 @@ function App() {
     const fetchData = async () => {
       const composedb = new ComposeClient({
         ceramic: 'http://localhost:7007',
-        definition: models 
+        definition: models
       });
     };
     fetchData();
@@ -82,6 +82,32 @@ function App() {
     }    
   };
 
+  const handleDatabaseOnWritePost = async (id) => {
+    const client = new ApolloClient({
+      uri: 'http://localhost:5005/graphql', 
+      cache: new InMemoryCache()
+    });
+    const postMutation = gql`
+      mutation CreatePost {
+        createPostSchema_3(input: {
+          PostID: ${id},
+          PostLikesHash: []
+        }) {
+          document
+         {
+          PostID
+          PostLikesHash
+          }
+        }
+      }
+  `;
+    client.mutate({ 
+      mutation: postMutation
+    }).then((data) => console.log(data)).catch((error) => console.error(error));
+    
+  }
+
+  
   const writePost = async () => {   // Call this function when the user clicks the "Write Post" button
     if (!newPost.title || !newPost.content) return;
     if (typeof window.ethereum !== 'undefined') {
@@ -90,37 +116,10 @@ function App() {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(PostcontractAddress, PostsABI, signer);
       const transaction = await contract.writePost(newPost.title, newPost.content);
-
-      const client = new ApolloClient({
-        uri: 'http://localhost:5005/graphql', 
-        cache: new InMemoryCache()
-      });
-      const postMutation = gql`
-      mutation CreatePost($PostHash: String!, $PostLikesHash: [String!]!) {
-        createPostStorage(input: {
-          content: {    
-            PostHash: $PostHash,
-            PostLikesHash: $PostLikesHash
-          }
-        }) {
-          document {
-            PostHash
-            PostLikesHash
-          }       
-        }
-      }
-    `;
-      client.mutate({ 
-        mutation: postMutation,
-        variables: {
-          PostHash: transaction.hash,
-          PostLikesHash: []
-        }
-      }).then((data) => console.log(data)).catch((error) => console.error(error));
-      
       await transaction.wait();
-      console.log("Mutation Works!"); 
-
+      
+      console.log('Contract: ', contract.getLastPostId()[0].toHexString());
+      // handleDatabaseOnWritePost(contract.getLastPostId());
       setNewPost({ title: '', content: '' }); // Reset form after submission
       fetchPosts(); // Fetch all posts again to update UI
     }
@@ -161,7 +160,7 @@ function App() {
 
   return (
     <Router>
-      <div style={{ display: 'flex', height: '100vh' }}>
+      <div style={{ display: 'flex', height: '100vh'}}>
         {isConnected && 
         ( 
         
@@ -182,9 +181,19 @@ function App() {
         )
         }
        
-        <div style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px' }}>
+        <div style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px'}}>
           <Container>
-            <h1>A Decentralized Social Network</h1>
+            <h1 style={{color: '#FF5794', 
+            border: '2px solid #FF5794', 
+            borderRadius: '10px', 
+            display: 'inline-block',
+            paddingLeft: '10px',
+            paddingRight: '40px',
+            fontFamily: 'Helvetica',
+            fontWeight: 'bolder',
+            }}>
+              A Decentralized Social Network
+              </h1>
             <Routes>
               <Route path="/" element={isConnected ? <Navigate to="/posts" /> : <Navigate to="/connect" />} />
               <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} /> : <Navigate to="/posts" />} />

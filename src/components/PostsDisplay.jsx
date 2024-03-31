@@ -2,7 +2,8 @@ import {React, useEffect, useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ApolloClient, gql, InMemoryCache, useMutation } from '@apollo/client';
 import { ComposeClient } from '@composedb/client';
-import models from "../models/runtime-PostSchema_3-composite.json"
+import models from "../models/runtime-PostSchema_3-composite.json";
+
 
 import { ethers } from 'ethers';
 import PostsABI from '../ABIs/PostsABI';
@@ -90,7 +91,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     const [liked, setLiked] = useState(false);
 
 
-    const postContractAddress = '0xA8bD1a6BD52a06183a8AE01d95b7f10D76B9A7b4';
+    const postContractAddress = '0x1f982BB004E706381e5BB4DBd412ec7363D4b02A';
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = web3Provider.getSigner();
     const postContract = new ethers.Contract(postContractAddress, PostsABI, signer);
@@ -136,21 +137,21 @@ function PostsDisplay({ posts, fetchPosts }) {
     };
 
     return (
-        <div>
+        <div style={{backgroundColor: '#212A3B'}}>
             {posts.map((post, index) => (
-                <Card key={index} style={{ marginTop: '15px' }}>
+                <Card key={index} style={{ marginTop: '15px', backgroundColor: '#212A3B' }}>
                     <Card.Body>
-                        <Card.Title>{post.title}</Card.Title>
-                        <Card.Text>{post.content}</Card.Text>
+                        <Card.Title style={{color: '#FFCC99', fontWeight:'bolder'}}>{post.title}</Card.Title>
+                        <Card.Text style={{color: '#FFCC99', fontWeight: 'bold'}}>{post.content}</Card.Text>
                         <button 
                             type="button" 
-                            className="btn btn-primary" 
+                            className="btn btn-primary"
                             onClick={() => handleLike(index)}
                         >
                             Like {likeCounts[index]}
                         </button>
                         <Card.Footer style={{ marginTop: '15px' }}>
-                            <small className="text-muted">Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
+                            <small className="text-muted" >Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
                             {/* <Button variant="link" onClick={() => console.log('Author:', post.author)}>Author</Button> */}
                         </Card.Footer>
                     </Card.Body>
