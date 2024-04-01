@@ -7,7 +7,7 @@ import PostsDisplay from './components/PostsDisplay';
 import Sidebar from './components/Sidebar';
 import Profile from './components/Profile';
 import { ComposeClient } from '@composedb/client';
-import models from "./models/runtime-PostSchema_3-composite.json"
+import models from "./models/runtime-PostSchema_4-composite.json"
 import PostsABI from './ABIs/PostsABI';
 import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
@@ -17,7 +17,7 @@ const ethers = require('ethers');
 
 function App() {
   
-  const PostcontractAddress = "0x1f982BB004E706381e5BB4DBd412ec7363D4b02A";
+  const PostcontractAddress = "0x1F36291C52eFd8BB88C127377cbE994FDFF69082";
   const [currentAccount, setCurrentAccount] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
@@ -89,7 +89,7 @@ function App() {
     });
     const postMutation = gql`
       mutation CreatePost($postID: String!, $postLikesHash: [String]!) {
-        createPostSchema_3(input: {
+        createPostSchema_4(input: {
         content: {
           PostID: $postID,
           PostLikesHash: $postLikesHash

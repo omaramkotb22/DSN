@@ -2,7 +2,7 @@ import {React, useEffect, useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ApolloClient, gql, InMemoryCache, useMutation } from '@apollo/client';
 import { ComposeClient } from '@composedb/client';
-import models from "../models/runtime-PostSchema_3-composite.json";
+import models from "../models/runtime-PostSchema_4-composite.json";
 
 
 import { ethers } from 'ethers';
@@ -14,7 +14,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     useEffect(() => {
         fetchPosts();
         const fetchLikes = async () => {
-            const likeCounts = await posts.map((post) => getLikeForAPost(post[0].toHexString()));
+            const likeCounts = await posts.map((post, index) => getLikesForAPost(post.id.toString()));
             const likes = await Promise.all(likeCounts);
             setLikeCounts(likes);
         };
@@ -36,11 +36,11 @@ function PostsDisplay({ posts, fetchPosts }) {
     });
 
     
-    const getLikeForAPost = async (postID) => { // Returns Length of the Likes array (Number of likes on a post)
-        console.log("Post ID:", postID);
+    const getLikesForAPost = async (postID) => { // Returns Length of the Likes array (Number of likes on a post)
+        
         const query = gql`
         query GetPostLikes($input: String!){
-            postSchema_3Index(
+            postSchema_4Index(
                 filters: {
                 where:{
                     PostID: {
@@ -62,12 +62,9 @@ function PostsDisplay({ posts, fetchPosts }) {
             const result = await client.query({
                 query,
                 variables: {input: postID}
-            });
-            console.log("Post Likes:", result.data.postSchema_3Index.edges[0].node.PostLikesHash.length);
-    
-            // Check if there are edges and a node present
-            if (result.data.postSchema_3Index.edges.length > 0 && result.data.postSchema_3Index.edges[0].node) {
-                const likeCounts = result.data.postSchema_3Index.edges[0].node.PostLikesHash.length;
+            });    
+            if (result.data.postSchema_4Index.edges.length > 0 && result.data.postSchema_4Index.edges[0].node) {
+                const likeCounts = result.data.postSchema_4Index.edges[0].node.PostLikesHash.length;
                 return likeCounts;
 
             } else {
@@ -81,17 +78,77 @@ function PostsDisplay({ posts, fetchPosts }) {
         }
     };
 
-    // useEffect(() => {
-    //     handleLikeIncOnDatabase("0x49d45077b3c2ef2ede10458a1a4aa950c500f17866344600b5aab3c6c19508e2");
-    // }
-    // );
-
+    
+    const updateLikesForAPost = async (PostID, LikeHash) => {
+        // First, We need to query the post's ID assigned automatically by the database
+        // Since the update mutation requires the ID of the post
+        const query = gql`
+            query GetID($input: String!) {
+            postSchema_4Index(
+                filters: {
+                where:{
+                    PostID: {
+                    equalTo: $input
+                    }
+                }
+                }
+                first:1){
+                    edges {
+                node {
+                    id
+                    PostLikesHash
+                }
+                }
+            }
+            }`;
+        const result = await client.query({ 
+            query,
+            variables: {input: PostID}
+            });
+        const id = result.data.postSchema_4Index.edges[0].node.id;
+        const likes = result.data.postSchema_4Index.edges[0].node.PostLikesHash;
+        const likesCopy = [...likes, LikeHash];
+        console.log('Likes:', likesCopy);
+        // Now, we can update the likes array of the post
+        const updateMutation = gql`
+        mutation UpdatePostLikes($id: ID!, $PostID: String!, $PostLikesHash: [String!]!) {
+            updatePostSchema_4(input: {
+                id: $id
+                content: {
+                    PostID: $PostID,
+                    PostLikesHash: $PostLikesHash
+                }
+                options: {
+                    replace: true
+                }
+            }) {
+                document {
+                    id
+                    PostID
+                    PostLikesHash
+                }
+            }
+        }`;
+    try {
+        await client.mutate({ 
+            mutation: updateMutation,
+            variables: { 
+                id: id, 
+                PostID: PostID, 
+                PostLikesHash: likesCopy // Correctly using likesCopy here
+            }
+        });
+    } catch (error) {
+        console.error("Error updating post likes:", error);
+    }
+    }
+            
 
     const [likeCounts, setLikeCounts] = useState(Array(posts.length).fill(0));
     const [liked, setLiked] = useState(false);
 
 
-    const postContractAddress = '0x1f982BB004E706381e5BB4DBd412ec7363D4b02A';
+    const postContractAddress = '0x1F36291C52eFd8BB88C127377cbE994FDFF69082';
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = web3Provider.getSigner();
     const postContract = new ethers.Contract(postContractAddress, PostsABI, signer);
@@ -105,9 +162,7 @@ function PostsDisplay({ posts, fetchPosts }) {
         try {
             const tx = await postContract.likePost(index, !liked, signature);
             await tx.wait();  // Wait for the Signature to be confirmed
-            console.log('Transaction successful:', tx.hash);
-            console.log('Transaction:', tx);
-            
+
             
             // If the transaction is successful, update the UI accordingly
             const newLikeCounts = [...likeCounts];
@@ -116,8 +171,11 @@ function PostsDisplay({ posts, fetchPosts }) {
             } else {
                 newLikeCounts[index] -= 1; // Decrement the like count by 1
             }
+            updateLikesForAPost(posts[index].id.toString(), signature);
+            console.log('Like Signature:', signature);
             setLikeCounts(newLikeCounts); 
             setLiked(!liked); // Toggle the liked state
+
         } catch (error) {
             console.error('Error submitting like:', error);
         }

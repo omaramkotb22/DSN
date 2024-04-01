@@ -1,8 +1,8 @@
-type PostSchema_3 @createModel(description: "A Model that Maps Likes to Posts")
+type PostSchema_4 @createModel(description: "A Model that Maps Likes to Posts")
     @createIndex(fields: [{path: "PostID"}])
 {
     PostID: String! @string(maxLength: 100)
-    PostLikesHash: [String!]! @list(maxLength: 10000) @string(maxLength: 100)
+    PostLikesHash: [String!]! @list(maxLength: 10000) @string(maxLength: 10000000)
 }
 
 
