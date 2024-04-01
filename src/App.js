@@ -88,10 +88,13 @@ function App() {
       cache: new InMemoryCache()
     });
     const postMutation = gql`
-      mutation CreatePost {
+      mutation CreatePost($postID: String!, $postLikesHash: [String]!) {
         createPostSchema_3(input: {
-          PostID: ${id},
-          PostLikesHash: []
+        content: {
+          PostID: $postID,
+          PostLikesHash: $postLikesHash
+        },
+          
         }) {
           document
          {
@@ -102,11 +105,14 @@ function App() {
       }
   `;
     client.mutate({ 
-      mutation: postMutation
+      mutation: postMutation, 
+      variables: { 
+        postID: id.toString(),
+        postLikesHash: []
+      }
     }).then((data) => console.log(data)).catch((error) => console.error(error));
     
   }
-
   
   const writePost = async () => {   // Call this function when the user clicks the "Write Post" button
     if (!newPost.title || !newPost.content) return;
@@ -117,9 +123,9 @@ function App() {
       const contract = new ethers.Contract(PostcontractAddress, PostsABI, signer);
       const transaction = await contract.writePost(newPost.title, newPost.content);
       await transaction.wait();
+      const postId = await contract.getLastPostId();
       
-      console.log('Contract: ', contract.getLastPostId()[0].toHexString());
-      // handleDatabaseOnWritePost(contract.getLastPostId());
+      handleDatabaseOnWritePost(postId.toString());
       setNewPost({ title: '', content: '' }); // Reset form after submission
       fetchPosts(); // Fetch all posts again to update UI
     }
@@ -183,8 +189,8 @@ function App() {
        
         <div style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px'}}>
           <Container>
-            <h1 style={{color: '#FF5794', 
-            border: '2px solid #FF5794', 
+            <h1 style={{color: '#0D6EFD', 
+            border: '2px solid #0D6EFD', 
             borderRadius: '10px', 
             display: 'inline-block',
             paddingLeft: '10px',
