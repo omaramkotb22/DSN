@@ -6,12 +6,13 @@ import AddPostForm from './components/AddPostForm';
 import PostsDisplay from './components/PostsDisplay';
 import Sidebar from './components/Sidebar';
 import Profile from './components/Profile';
+import AccountDetails from './components/AccountDetails';
 import { ComposeClient } from '@composedb/client';
-import models from "./models/runtime-PostSchema_4-composite.json"
+import models from "./models/runtime-merged-composite.json"
 import PostsABI from './ABIs/PostsABI';
-import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-import { DIDsessions } from 'did-session';
+
 const ethers = require('ethers');
 
 
@@ -21,30 +22,19 @@ function App() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
-  const [hashList, setHashList] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      const composedb = new ComposeClient({
-        ceramic: 'http://localhost:7007',
-        definition: models
-      });
-    };
-    fetchData();
-  }
-)
+
   
 
   useEffect(() => {
     const checkIfWalletIsConnected = async () => {
       const { ethereum } = window;
       if (!ethereum) {
-        console.log("Make sure you have MetaMask installed!");
         return;
       } else {
         console.log("We have the ethereum object", ethereum);
@@ -59,13 +49,13 @@ function App() {
         }
       }
     };
-
     checkIfWalletIsConnected();
   }, []);
 
-  const requestAccount = async () => {
+  const requestAccount = async () => { // Request Metamask wallet access
     const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
     setCurrentAccount(account);
+    console.log("Connected", account);
   };
 
   const fetchPosts = async () => {   // Fetch posts from the blockchain
@@ -114,7 +104,7 @@ function App() {
     
   }
   
-  const writePost = async () => {   // Call this function when the user clicks the "Write Post" button
+  const writePost = async () => {   // Call this function when the user clicks the "Add Post" button
     if (!newPost.title || !newPost.content) return;
     if (typeof window.ethereum !== 'undefined') {
       await requestAccount();
@@ -141,29 +131,6 @@ function App() {
   }, [currentAccount]);
 
 
-  const handleAddPost = () => {
-    console.log('Add Post Clicked');
-  }
-
-  const handleDisconnect = () => {
-    console.log('Disconnect Clicked');
-  }
-
-  const handleFeed = () => {
-    console.log('Feed Clicked');
-  }
-  const handleProfile = () => {
-    console.log('Profile Clicked');
-  }
-  const handleCommunities = () => {
-    console.log('Communities Clicked');
-  }
-
-
-
-
-
-
   return (
     <Router>
       <div style={{ display: 'flex', height: '100vh'}}>
@@ -171,7 +138,7 @@ function App() {
         ( 
         
           <div>
-          <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} onAddPost={handleAddPost} onDisconnect={handleDisconnect} onFeed={handleFeed} onProfile={handleProfile}/>
+          <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
             <button onClick={toggleSidebar} style={{ 
               fontSize: '30px', 
               cursor: 'pointer', 
@@ -181,7 +148,7 @@ function App() {
               top: '0px', 
               left: '0px',
               }}>
-              {sidebarOpen ? '✖️' : '☰'}
+              {sidebarOpen ? <p style={{color: 'red'}}>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
             </button>
           </div>
         )
@@ -189,7 +156,8 @@ function App() {
        
         <div style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px'}}>
           <Container>
-            <h1 style={{color: '#0D6EFD', 
+            <h1 style={{
+            color: '#0D6EFD', 
             border: '2px solid #0D6EFD', 
             borderRadius: '10px', 
             display: 'inline-block',
@@ -202,18 +170,24 @@ function App() {
               </h1>
             <Routes>
               <Route path="/" element={isConnected ? <Navigate to="/posts" /> : <Navigate to="/connect" />} />
-              <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} /> : <Navigate to="/posts" />} />
+              <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} /> : <Navigate to="/posts" />} />
               <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost} AddPostForm={writePost}/> : <Navigate to="/connect" />} />
               <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
               <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
               <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
-              
             </Routes>
-
-
-
           </Container>
         </div>
+
+      <div>
+        {isConnected && (
+            <AccountDetails 
+              username="username" 
+              ethBalance="0.3864" 
+              usdBalance="$1,305.21" 
+            />
+          )}
+      </div>
       </div>
     </Router>
   );

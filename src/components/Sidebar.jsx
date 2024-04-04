@@ -2,7 +2,7 @@ import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 
-function Sidebar({ show, onAddPost, onFeed, onProfile, onCommunities }) {
+function Sidebar({ show }) {
     const circleSize = 200; // The size of the circular menu
     return (
         <div style={{
@@ -15,7 +15,7 @@ function Sidebar({ show, onAddPost, onFeed, onProfile, onCommunities }) {
             zIndex: '1',
             top: '0',
             left: '0',
-            backgroundColor: 'transparent', // Making background transparent
+            backgroundColor: 'transparent',
             overflow: 'hidden',
             borderRadius: '50%', // Making it circular
             clipPath: 'circle(50%)', // Clipping to a quarter circle
@@ -32,16 +32,16 @@ function Sidebar({ show, onAddPost, onFeed, onProfile, onCommunities }) {
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-                <NavLink to="/profile" onClick={onProfile} style={{margin: '10px'}}>
+                <NavLink to="/profile" style={{margin: '10px'}}>
                     <img src="https://img.icons8.com/material-rounded/96/228BE6/user-male.png" alt="Profile" style={{width: '50px', height: '50px'}} />
                 </NavLink>
-                <NavLink to="/posts" onClick={onFeed} style={{margin: '10px'}}>
+                <NavLink to="/posts" style={{margin: '10px'}}>
                     <img src="https://img.icons8.com/material-rounded/96/228BE6/news.png" alt="Feed" style={{width: '50px', height: '50px'}} />
                 </NavLink>
-                <NavLink to="/add-post" onClick={onAddPost} style={{margin: '10px'}}>
+                <NavLink to="/add-post" style={{margin: '10px'}}>
                     <img src="https://img.icons8.com/material-rounded/96/228BE6/plus--v1.png" alt="Add Post" style={{width: '50px', height: '50px'}} />
                 </NavLink>
-                <NavLink to="/communities" style={{margin: '10px'}} onClick={onCommunities} >
+                <NavLink to="/communities" style={{margin: '10px'}} >
                     <img src="https://img.icons8.com/material-rounded/96/228BE6/share-2.png" alt="Communities" style={{width: '50px', height: '50px'}} />
                 </NavLink> {/* Assuming you have a route for communities */}
             </Nav>

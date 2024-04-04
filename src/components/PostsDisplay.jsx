@@ -2,7 +2,7 @@ import {React, useEffect, useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ApolloClient, gql, InMemoryCache, useMutation } from '@apollo/client';
 import { ComposeClient } from '@composedb/client';
-import models from "../models/runtime-PostSchema_4-composite.json";
+import models from "../models/runtime-merged-composite.json";
 
 
 import { ethers } from 'ethers';
@@ -195,9 +195,9 @@ function PostsDisplay({ posts, fetchPosts }) {
     };
 
     return (
-        <div style={{backgroundColor: '#212A3B'}}>
+        <div style={{backgroundColor: '#000000'}}>
             {posts.map((post, index) => (
-                <Card key={index} style={{ marginTop: '15px', backgroundColor: '#212A3B' }}>
+                <Card key={index} style={{ marginTop: '15px', backgroundColor: '#000000' }}>
                     <Card.Body>
                         <Card.Title style={{color: '#FFCC99', fontWeight:'bolder'}}>{post.title}</Card.Title>
                         <Card.Text style={{color: '#FFCC99', fontWeight: 'bold'}}>{post.content}</Card.Text>
