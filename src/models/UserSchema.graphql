@@ -1,0 +1,24 @@
+type UserSchema @createModel(description: "A User Model")
+    @createIndex(fields: [{path: "userAddress"}, {path: "usename"}])
+ {
+  userAddress: String! @string(maxLength: 100)
+  usename: String! @string(minLength:3, maxLength: 100)
+  bio: String! @string(maxLength: 500) 
+}  
+
+
+input UserSchemaFiltersInput {
+  userAddress: StringFilterInput
+  usename: StringFilterInput
+  bio: StringFilterInput
+}
+
+input StringFilterInput {
+  eq: String
+  ne: String
+  in: [String]
+  nin: [String]
+  contains: String
+  ncontains: String
+}
+ 
