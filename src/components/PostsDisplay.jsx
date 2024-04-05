@@ -197,7 +197,12 @@ function PostsDisplay({ posts, fetchPosts }) {
     return (
         <div style={{backgroundColor: '#000000'}}>
             {posts.map((post, index) => (
-                <Card key={index} style={{ marginTop: '15px', backgroundColor: '#000000' }}>
+                <Card 
+                    key={index} 
+                    bg='dark'
+                    style={{ marginTop: '15px'}}
+                    text='white'
+                >
                     <Card.Body>
                         <Card.Title style={{color: '#FFCC99', fontWeight:'bolder'}}>{post.title}</Card.Title>
                         <Card.Text style={{color: '#FFCC99', fontWeight: 'bold'}}>{post.content}</Card.Text>
@@ -209,7 +214,7 @@ function PostsDisplay({ posts, fetchPosts }) {
                             Like {likeCounts[index]}
                         </button>
                         <Card.Footer style={{ marginTop: '15px' }}>
-                            <small className="text-muted" >Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
+                            <small className="text-muted-dark" >Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
                             {/* <Button variant="link" onClick={() => console.log('Author:', post.author)}>Author</Button> */}
                         </Card.Footer>
                     </Card.Body>

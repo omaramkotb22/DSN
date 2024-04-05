@@ -13,6 +13,7 @@ import PostsABI from './ABIs/PostsABI';
 import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
+
 const ethers = require('ethers');
 
 
@@ -24,7 +25,7 @@ function App() {
   const [newPost, setNewPost] = useState({ title: '', content: '' });
   const [isConnected, setIsConnected] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [isNewUser, setIsNewUser] = useState(false);
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -121,8 +122,29 @@ function App() {
     }
   };
 
-
-
+  const CheckIfUserExists = async () => {
+    const client = new ApolloClient({
+      uri: 'http://localhost:5005/graphql',
+      cache: new InMemoryCache()
+    });
+    const query = gql`
+      query {
+        userSchemaIndex(first:8) {
+    edges {
+      node {
+        id
+        usename
+        userAddress
+      }
+    }
+  }
+    }`;
+    const result = await client.query({ query });
+    console.log(result);
+  }
+  useEffect(() => {
+    CheckIfUserExists();
+  }, []);
   useEffect(() => {
     if (currentAccount) {
       setIsConnected(true);
@@ -130,13 +152,11 @@ function App() {
     }
   }, [currentAccount]);
 
-
   return (
     <Router>
       <div style={{ display: 'flex', height: '100vh'}}>
         {isConnected && 
-        ( 
-        
+        (     
           <div>
           <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
             <button onClick={toggleSidebar} style={{ 
@@ -176,18 +196,19 @@ function App() {
               <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
               <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
             </Routes>
-          </Container>
-        </div>
 
-      <div>
-        {isConnected && (
-            <AccountDetails 
-              username="username" 
-              ethBalance="0.3864" 
-              usdBalance="$1,305.21" 
-            />
-          )}
-      </div>
+          </Container>
+
+        </div>
+        <div>
+              {isConnected && (
+                  <AccountDetails 
+                    username="username" 
+                    Address={currentAccount}
+                  />
+                )}
+            </div>
+
       </div>
     </Router>
   );
