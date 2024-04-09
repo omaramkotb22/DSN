@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Container } from 'react-bootstrap';
+import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const CreateProfile = () => {
@@ -19,8 +19,14 @@ const CreateProfile = () => {
 
   return (
     <Container style={{ marginTop: '2rem' }}>
+      <Card
+        bg='dark'
+        style={{ marginTop: '15px'}}
+        text='white'
+        padding='20px'
+      >
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="username">
+        <Form.Group className="mb-3" controlId="username" padding="20px">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
@@ -46,6 +52,7 @@ const CreateProfile = () => {
           Create Profile
         </Button>
       </Form>
+      </Card>
     </Container>
   );
 };

@@ -5,8 +5,9 @@ const Web3 = require('web3');
 
 function AccountDetails({ username, Address }){
   
-  // shortAddress is the first 6 characters and the last 4 characters of the Address
-  // To Display
+  // shortAddress is the first 6 characters and 
+  // the last 4 characters of the Address
+  // To be displayed in the UI
   const [ethBalance, setEthBalance] = useState(0.000);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const fetchEthBalance = async () => {
@@ -32,6 +33,7 @@ function AccountDetails({ username, Address }){
         </ButtonGroup>
       </Card.Header>
       <ListGroup variant='flush'>
+        
         <ListGroup.Item>ETH Balance: {ethBalance} </ListGroup.Item>
         <ListGroup.Item> $ 1250.00</ListGroup.Item>  
       </ListGroup>
