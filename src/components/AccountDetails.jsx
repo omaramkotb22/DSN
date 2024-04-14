@@ -1,9 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Dropdown, DropdownButton, ButtonGroup, ListGroup, Button } from 'react-bootstrap';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 const ethers = require('ethers');
 const Web3 = require('web3');
 
-function AccountDetails({ username, Address }){
+function AccountDetails({ Address }){
+  
+  const [username, setUsername] = useState("");
+  const client = new ApolloClient({
+    uri: 'http://localhost:5005/graphql',
+    cache: new InMemoryCache()
+  });
+  // Get the username from the database
+  const fetchUsername = async () => {
+    const queryUsername = gql`
+      query Find($input: String!) {
+        userSchemaIndex(
+          filters: {
+            where: {
+              
+              userAddress: {
+                equalTo: $input
+              }
+            }
+          }
+          first:1) {
+          edges {
+            node {
+              id
+              usename
+              userAddress
+            }
+          }
+        }
+      }
+          
+    `
+    const result = await client.query({
+      query: queryUsername,
+      variables: {
+        input: Address
+      }
+    });
+    setUsername(result.data.userSchemaIndex.edges[0].node.usename);
+
+  }
+  useEffect(() => { 
+    fetchUsername();
+  });
   
   // shortAddress is the first 6 characters and 
   // the last 4 characters of the Address

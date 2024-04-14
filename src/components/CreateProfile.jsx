@@ -1,20 +1,57 @@
 import React, { useState } from 'react';
 import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import {ApolloClient, InMemoryCache, gql} from '@apollo/client';
 
-const CreateProfile = () => {
+function CreateProfile({onCreateProfile, account}) {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
-
-  const handleSubmit = (event) => {
+  
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Here, you would typically handle the form submission,
-    // like sending the data to your backend or smart contract.
-    console.log({ username, bio });
-    
-    // After creating the profile, redirect to '/posts'
-    navigate('/posts');
+    const client = new ApolloClient({
+      uri: 'http://localhost:5005/graphql',
+      cache: new InMemoryCache()
+    });
+    // Add Profile to Database
+    // ! Note : A typo was made while defining the schema, 
+    // ! Caused username to be called with usename instead
+    const createProfileMutation = gql`
+      mutation AddNewUser($bio:String!, $usename: String!, $userAddress:String!){
+        createUserSchema(input: {
+          content: {
+            bio: $bio
+            usename: $usename
+            userAddress: $userAddress
+            
+          }
+        }) {
+          document {
+            id
+            bio
+            usename
+            userAddress
+          }
+        }
+      }
+    `;
+    try {
+      await client.mutate({
+        mutation: createProfileMutation,
+        variables: {
+          bio: bio,
+          usename: username, 
+          userAddress: account,
+        }
+      });
+      navigate('/posts');
+      onCreateProfile();
+    } catch (error) {
+      console.error("Error creating profile:", error);
+    }
+    onCreateProfile(); // A function that sets the user to both connected and old (To enable the routes)
+
   };
 
   return (

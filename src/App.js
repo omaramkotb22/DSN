@@ -109,47 +109,70 @@ function App() {
       mutation: postMutation, 
       variables: { 
         postID: id.toString(),
-        postLikesHash: []
+        postLikesHash: [] // A new post would obviously have no likes so an empty array
       }
     }).then((data) => console.log(data)).catch((error) => console.error(error));
     
   }
-  useEffect(() => {
-    CheckIfUserExists();
-  }, [currentAccount]); 
-  const CheckIfUserExists = async () => {
-  //   const client = new ApolloClient({
-  //     uri: 'http://localhost:5005/graphql',
-  //     cache: new InMemoryCache()
-  //   });
-  //   const query = gql`
-  //     query {
-  //     userSchemaIndex(first:1) {
-  //       edges {
-  //         node {
-  //           id
-  //           usename
-  //           userAddress
-  //         }
-  //   }
-  // }
-  //   }`;
-  //   const result = await client.query({ query });
-  //   if (result.data.userSchemaIndex.edges.length === 0) {
-  //     setIsNewUser(true);
-  //   } else {
-  //     setIsNewUser(true);
 
-  //   }
-    setIsNewUser(true);
+  const CheckIfUserExists = async () => {
+    const client = new ApolloClient({
+      uri: 'http://localhost:5005/graphql',
+      cache: new InMemoryCache()
+    });
+    const checkUserQuery = gql`
+      query FindIfUserExists($userAddress: String!) { 
+          userSchemaIndex(
+            filters: {
+              where: {
+                userAddress: {
+                  equalTo: $userAddress
+                }
+              }
+            }
+            first: 1) {
+            edges {
+              node {
+                id
+                usename
+                userAddress
+              }
+                }
+                  } 
+      }`;
+    try {    
+      const userAddressResults = await client.query({
+          query: checkUserQuery,             
+          variables: {userAddress: currentAccount.toString()},
+      })
+      console.log(userAddressResults);
+      // Checks if Query returns an empty array, if yes then the user is new
+      if((await userAddressResults).data.userSchemaIndex.edges.length === 0){
+        setIsNewUser(true);
+      }
+      else {
+        setIsNewUser(false);
+      }
+      }  catch (error)
+      { 
+        console.log(error);
+      }
   }
+  
 
   useEffect(() => {
     if (currentAccount) {
       setIsConnected(true);
       fetchPosts();
     }
+    
   }, [currentAccount]);
+
+  useEffect(() => { // This function shouldnt be called on use effect, instead on Connect wallet
+    if (currentAccount) {
+      CheckIfUserExists();
+    }
+  }, [currentAccount]); 
 
   return (
 
@@ -190,14 +213,14 @@ function App() {
           <Routes>
             <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
             <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
-            <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onProfileCreated={() => setIsNewUser(false)} /> : <Navigate to="/posts" />} />
+            <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
             <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost}/> : <Navigate to="/connect" />} />
             <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
             <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
             <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
         </Routes>
         </Container>
-        {(isConnected && !isNewUser) && <AccountDetails username="username" Address={currentAccount} />}
+        {(isConnected && !isNewUser) && <AccountDetails Address={currentAccount} />}
       </div>
     </Router>
   );

@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import PostsABI from '../ABIs/PostsABI';
 
 
-function PostsDisplay({ posts, fetchPosts }) {
+function PostsDisplay({ posts, fetchPosts}) {
 
     useEffect(() => {
         fetchPosts();
@@ -28,16 +28,9 @@ function PostsDisplay({ posts, fetchPosts }) {
         uri: 'http://localhost:5005/graphql', 
         cache: new InMemoryCache()
       });
-
     
-    const composeClient = new ComposeClient({
-        ceramic: 'http://localhost:7007',
-        definition: models
-    });
-
-    
-    const getLikesForAPost = async (postID) => { // Returns Length of the Likes array (Number of likes on a post)
-        
+    const getLikesForAPost = async (postID) => { 
+    // Returns Length of the Likes array (Number of likes on a post)
         const query = gql`
         query GetPostLikes($input: String!){
             postSchema_4Index(
@@ -105,10 +98,16 @@ function PostsDisplay({ posts, fetchPosts }) {
             query,
             variables: {input: PostID}
             });
+        
+        // * Because Apollo, GraphQL and Compose DB      are   all 
+        // * autistic tools, the only way you can update the likes 
+        // * is to create an array that is a copy of the  existing 
+        // * array that and add the new hash into it then  replace
+        // * the copied array into it. 
+        // * iow, you cant append directly :)
         const id = result.data.postSchema_4Index.edges[0].node.id;
         const likes = result.data.postSchema_4Index.edges[0].node.PostLikesHash;
         const likesCopy = [...likes, LikeHash];
-        console.log('Likes:', likesCopy);
         // Now, we can update the likes array of the post
         const updateMutation = gql`
         mutation UpdatePostLikes($id: ID!, $PostID: String!, $PostLikesHash: [String!]!) {
