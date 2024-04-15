@@ -8,7 +8,6 @@ import Sidebar from './components/Sidebar';
 import Profile from './components/Profile';
 import CreateProfile from './components/CreateProfile';
 import AccountDetails from './components/AccountDetails';
-import RedirectToProfileOrConnect from './hooks/RedirectToProfileOrConnect'; // Using for navigation
 import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import PostsABI from './ABIs/PostsABI';
@@ -176,38 +175,21 @@ function App() {
 
   return (
 
-    <Router>
+    <Router styles={styles.appContainer}>
       <div style={{ display: 'flex', height: '100vh'}}>
       {(isConnected && !isNewUser) &&
         (     
           <div>
           <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <button onClick={toggleSidebar} style={{ 
-              fontSize: '30px',
-              cursor: 'pointer',
-              backgroundColor: 'transparent',
-              border: 'none',
-              position: 'absolute',
-              top: '0px',
-              left: '0px',
-              }}>
+            <button onClick={toggleSidebar} style={styles.toggleButton}>
               {sidebarOpen ? <p style={{color: 'red'}}>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
             </button>
           </div>
         )}
     
-        <Container style={{ flex: 1, transition: 'margin-left .5s', marginLeft: sidebarOpen ? '250px' : '0px'}}>
+        <Container style={{ ...styles.mainContainer, marginLeft: sidebarOpen ? '250px' : '0px' }}>
           
-          <h1 style={{
-            color: '#0D6EFD', 
-            border: '2px solid #0D6EFD', 
-            borderRadius: '10px', 
-            display: 'inline-block',
-            paddingLeft: '10px',
-            paddingRight: '40px',
-            fontFamily: 'Helvetica',
-            fontWeight: 'bolder',
-            }}>
+          <h1 style={styles.header}>
             A Decentralized Social Network
           </h1>
           <Routes>
@@ -225,5 +207,34 @@ function App() {
     </Router>
   );
 }
+const styles = {
+  appContainer: {
+    display: 'flex',
+    height: '100vh'
+  },
+  mainContainer: {
+    flex: 1,
+    transition: 'margin-left .5s'
+  },
+  toggleButton: {
+    fontSize: '30px',
+    cursor: 'pointer',
+    backgroundColor: 'transparent',
+    border: 'none',
+    position: 'absolute',
+    top: '0px',
+    left: '0px',
+    color: '#0D6EFD'
+  },
+  header: {
+    color: '#0D6EFD',
+    border: '2px solid #0D6EFD',
+    borderRadius: '10px',
+    display: 'inline-block',
+    padding: '10px 40px',
+    fontFamily: 'Helvetica',
+    fontWeight: 'bold'
+  }
+};
 
 export default App;

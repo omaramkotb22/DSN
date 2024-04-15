@@ -1,15 +1,14 @@
 import {React, useEffect, useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
-import { ApolloClient, gql, InMemoryCache, useMutation } from '@apollo/client';
-import { ComposeClient } from '@composedb/client';
-import models from "../models/runtime-merged-composite.json";
-
+import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
+import '../styles/PostsDisplay.css';
+import 'bootstrap-icons/font/bootstrap-icons.css'; 
 
 import { ethers } from 'ethers';
 import PostsABI from '../ABIs/PostsABI';
 
 
-function PostsDisplay({ posts, fetchPosts}) {
+function PostsDisplay({ posts, fetchPosts }) {
 
     useEffect(() => {
         fetchPosts();
@@ -194,24 +193,23 @@ function PostsDisplay({ posts, fetchPosts}) {
     };
 
     return (
-        <div style={{backgroundColor: '#000000'}}>
+        <div className='post-container'>
             {posts.map((post, index) => (
                 <Card 
                     key={index} 
-                    bg='dark'
-                    style={{ marginTop: '15px'}}
-                    text='white'
+                    className="post-card"
+
                 >
                     <Card.Body>
-                        <Card.Title style={{color: '#FFCC99', fontWeight:'bolder'}}>{post.title}</Card.Title>
-                        <Card.Text style={{color: '#FFCC99', fontWeight: 'bold'}}>{post.content}</Card.Text>
-                        <button 
-                            type="button" 
-                            className="btn btn-primary"
+                        <Card.Title>{post.title}</Card.Title>
+                        <Card.Text>{post.content}</Card.Text>
+                        <Button 
+                            variant='outline-light'
+                            className='like-button'
                             onClick={() => handleLike(index)}
                         >
-                            Like {likeCounts[index]}
-                        </button>
+                            <i className={`bi ${liked ? 'bi-heart-fill' : 'bi-heart'}`}></i> {likeCounts[index]}
+                        </Button>
                         <Card.Footer style={{ marginTop: '15px' }}>
                             <small className="text-muted-dark" >Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
                             {/* <Button variant="link" onClick={() => console.log('Author:', post.author)}>Author</Button> */}
