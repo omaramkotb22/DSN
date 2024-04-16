@@ -1,0 +1,71 @@
+/* Base styles for the dropdown */
+.account-dropdown {
+    background-color: #343a40; /* Dark base color for dropdown */
+    border: none;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+
+.account-dropdown:hover {
+    background-color: #3a3b3c; /* Subtle hover effect */
+}
+
+/* Styling for dropdown content */
+.dropdown-content {
+    padding: 15px;
+    color: #ccc;
+    background: linear-gradient(145deg, #333740, #282c34); /* Sophisticated gradient background */
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+    transition: background-color 0.3s ease-in-out;
+}
+.dropdown-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #bbb; /* Highlighting username */
+    transition: color 0.2s ease-in-out;
+}
+
+
+.dropdown-subtitle {
+    font-size: 18px;
+    color: #aaa; 
+    transition: color 0.2s ease-in-out;
+}
+
+.copy-button {
+    border-color: #666;
+    color: #fff;
+    background: linear-gradient(180deg, #5c626e, #434951);
+    transition: all 0.2s ease-in-out;
+}
+
+.copy-button:hover, .copy-button:focus {
+    background-color: #0D6EFD;
+    color: #ffffff;
+    border-color: #0D6EFD;
+    transform: translateY(-2px); /* Subtle lift effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.bi-clipboard, .bi-check-lg {
+    margin-right: 5px; /* Icon spacing */
+}
+
+
+.dropdown-title:hover, .dropdown-subtitle:hover {
+    color: #f8f9fa;
+}
+
+.copy-button, .account-dropdown {
+    cursor: pointer;
+}

@@ -6,6 +6,7 @@ import AddPostForm from './components/AddPostForm';
 import PostsDisplay from './components/PostsDisplay';
 import Sidebar from './components/Sidebar';
 import Profile from './components/Profile';
+import SearchBar from './components/SearchBar';
 import CreateProfile from './components/CreateProfile';
 import AccountDetails from './components/AccountDetails';
 import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
@@ -167,8 +168,8 @@ function App() {
     
   }, [currentAccount]);
 
-  useEffect(() => { // This function shouldnt be called on use effect, instead on Connect wallet
-    if (currentAccount) {
+  useEffect(() => {
+    if (currentAccount) { // Since on start up, currentAccount is null
       CheckIfUserExists();
     }
   }, [currentAccount]); 
@@ -192,6 +193,7 @@ function App() {
           <h1 style={styles.header}>
             A Decentralized Social Network
           </h1>
+          {(isConnected && !isNewUser) &&<SearchBar onSearch={(term) => console.log('Searching for:', term)} />}
           <Routes>
             <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
             <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
@@ -227,13 +229,17 @@ const styles = {
     color: '#0D6EFD'
   },
   header: {
-    color: '#0D6EFD',
-    border: '2px solid #0D6EFD',
-    borderRadius: '10px',
+    color: '#EFEFEF', 
+    backgroundColor: '#162447', 
+    border: '1px solid #1F4068',
+    borderRadius: '5px', 
     display: 'inline-block',
-    padding: '10px 40px',
-    fontFamily: 'Helvetica',
-    fontWeight: 'bold'
+    padding: '10px 20px',
+    fontFamily: 'Arial, sans-serif', 
+    fontWeight: 'bold',
+    textShadow: '2px 2px 4px #1F4068', 
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)', 
+    transition: 'all 0.3s ease-in-out', 
   }
 };
 

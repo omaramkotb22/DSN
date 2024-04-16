@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Dropdown, DropdownButton, ButtonGroup, ListGroup, Button } from 'react-bootstrap';
+import { Card, Dropdown, DropdownButton, ButtonGroup, ListGroup, Button, Toast } from 'react-bootstrap';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import '../styles/AccountDetails.css';
 const ethers = require('ethers');
 const Web3 = require('web3');
 
 function AccountDetails({ Address }){
   
   const [username, setUsername] = useState("");
+  const [copied, setCopied] = useState(false);
   const client = new ApolloClient({
     uri: 'http://localhost:5005/graphql',
     cache: new InMemoryCache()
@@ -20,7 +22,7 @@ function AccountDetails({ Address }){
             where: {
               
               userAddress: {
-                equalTo: $input
+                equalTo: $input 
               }
             }
           }
@@ -64,24 +66,26 @@ function AccountDetails({ Address }){
   const shortAddress = `${Address.slice(0, 6)}...${Address.slice(-4)}`;
   const copyToClipboard = () => {
     navigator.clipboard.writeText(Address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // Display the tick for 2 seconds
+    
   }
 
   return (
-    <DropdownButton title={username} >
-      <Card>
-      <Card.Header>
-        <Card.Title> {username} </Card.Title>
-        <Card.Subtitle> {shortAddress} </Card.Subtitle>
-        <ButtonGroup>
-          <Button onClick={copyToClipboard}>Copy Address</Button>
-        </ButtonGroup>
-      </Card.Header>
-      <ListGroup variant='flush'>
-        
-        <ListGroup.Item>ETH Balance: {ethBalance} </ListGroup.Item>
-        <ListGroup.Item> $ 1250.00</ListGroup.Item>  
-      </ListGroup>
-      </Card>
+    <DropdownButton title={username || 'Account Details'} variant="secondary" className="account-dropdown">
+      <div className='dropdown-content'> 
+        <div className="dropdown-content">
+          <div className="dropdown-detail">
+            <p className="dropdown-title">{username}</p>
+            <p className="dropdown-subtitle">{`${Address.slice(0, 6)}...${Address.slice(-4)}`}</p>
+            <p className="dropdown-subtitle">{`${ethBalance} ETH`}</p>
+          </div>
+          <Button variant="outline-light" className="copy-button" onClick={copyToClipboard}>
+            <i className={`bi ${copied ? 'bi-check-lg' : 'bi-clipboard'}`}></i>
+          </Button>
+        </div>
+      </div>
+
     </DropdownButton>
   );
 };
