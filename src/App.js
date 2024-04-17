@@ -9,8 +9,9 @@ import Profile from './components/Profile';
 import SearchBar from './components/SearchBar';
 import CreateProfile from './components/CreateProfile';
 import AccountDetails from './components/AccountDetails';
-import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
+import {useNavigate, BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import ViewUserProfile from './components/ViewUserProfile';
 import PostsABI from './ABIs/PostsABI';
 
 const ethers = require('ethers');
@@ -193,7 +194,7 @@ function App() {
           <h1 style={styles.header}>
             A Decentralized Social Network
           </h1>
-          {(isConnected && !isNewUser) &&<SearchBar onSearch={(term) => console.log('Searching for:', term)} />}
+          {(isConnected && !isNewUser) &&<SearchBar />}
           <Routes>
             <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
             <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
@@ -202,6 +203,7 @@ function App() {
             <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
             <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
             <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
+            <Route path="/users/:userAddress" element={<ViewUserProfile />} />
         </Routes>
         </Container>
         {(isConnected && !isNewUser) && <AccountDetails Address={currentAccount} />}

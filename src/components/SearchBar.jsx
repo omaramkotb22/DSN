@@ -1,15 +1,69 @@
 import React, { useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 
-function SearchComponent({ onSearch }) {
+function SearchBar() {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+
+
+  const client = new ApolloClient({
+    uri: 'http://localhost:5005/graphql',
+    cache: new InMemoryCache()
+  });
+
+  const findUserByUsername = async (username) => {
+    const query = gql`
+      query SearchUser($term: String!) {
+        userSchemaIndex(filters: { 
+          where: {
+            
+                usename: {
+                  equalTo: $term 
+                }
+          }
+
+        }, first: 1) {
+          edges {
+            node {
+              userAddress
+              usename
+              bio
+            }
+          }
+        }
+      }`
+      try {
+      const result = await client.query({
+        query: query,
+        variables: { term: username }
+      });
+      if (result.data.userSchemaIndex.edges.length > 0) {
+        const user = result.data.userSchemaIndex.edges[0].node; // Get the first user with the same username
+        navigate(`/users/${user.userAddress}`, { state: { user } });
+      } else {
+        console.log("No user found.");
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+    };
+
+    const result = await client.query({
+      query: query,
+      variables: {
+        term: searchTerm
+      }
+    });
+  }
 
   const handleSearch = () => {
-    onSearch(searchTerm);
+    findUserByUsername(searchTerm);
+    
   };
 
-  // Use onKeyDown to detect when the Enter key is pressed
-  const handleKeyDown = (event) => {
+  
+  const handleKeyDown = (event) => { // On Key Down event handler, that when user presses 'Enter' 
     if (event.key === 'Enter') {
       handleSearch();
     }
@@ -33,4 +87,4 @@ function SearchComponent({ onSearch }) {
   );
 }
 
-export default SearchComponent;
+export default SearchBar;
