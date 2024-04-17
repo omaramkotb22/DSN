@@ -1,0 +1,36 @@
+.connect-wallet-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* This will take the full height of the viewport */
+    width: 100vw; /* This will take the full width of the viewport */
+    position: absolute; /* Position it absolutely relative to the viewport */
+    top: 0;
+    left: 0;
+  }
+  
+  .connect-wallet-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold; /* Make text bold */
+    color: black; /* Set default text color */
+    display: flex; /* Use flexbox for stacking */
+    flex-direction: column;
+    align-items: center;    
+    gap: 10px;
+    border: none;
+    transition: transform 0.2s, background-color 0.2s;
+    border-radius: 70px;
+  }
+  
+  .connect-wallet-button:hover {
+    transform: scale(1.05);
+    background-color: #e57000;
+    color: white; /* Set text color to white on hover */
+  }
+  
+  /* Example Bootstrap Icons usage */
+  .bi-wallet2 {
+    font-size: 24px; /* Sizing the icon */
+  }
+  

@@ -190,10 +190,11 @@ function App() {
         )}
     
         <Container style={{ ...styles.mainContainer, marginLeft: sidebarOpen ? '250px' : '0px' }}>
-          
+        {(isConnected && !isNewUser) &&
           <h1 style={styles.header}>
             A Decentralized Social Network
           </h1>
+        }
           {(isConnected && !isNewUser) &&<SearchBar />}
           <Routes>
             <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />

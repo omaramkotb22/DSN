@@ -24,7 +24,7 @@ function SearchBar() {
                 }
           }
 
-        }, first: 1) {
+        }, last: 1) { 
           edges {
             node {
               userAddress
@@ -49,12 +49,6 @@ function SearchBar() {
       console.error("Search error:", error);
     };
 
-    const result = await client.query({
-      query: query,
-      variables: {
-        term: searchTerm
-      }
-    });
   }
 
   const handleSearch = () => {

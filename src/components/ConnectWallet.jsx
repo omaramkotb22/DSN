@@ -1,16 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import { Button, Nav } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import models from '../models/runtime-merged-composite.json';
+import React from 'react';
+import { Button } from 'react-bootstrap';
+import metamask from '../assets/icons/metamask.svg';
+import '../styles/ConnectWallet.css'; 
 
-function ConnectWalletButton({ onConnect }) {
-  
-  const [hasProfile, setHasProfile] = useState(false);
+function ConnectWallet({ onConnect }) {
   return (
-  <div>
-    <Button onClick={onConnect} variant='primary'>Login</Button>
-  </div>
+    <div className="connect-wallet-container">
+      <Button onClick={onConnect} className="connect-wallet-button" variant='light'>
+        <img src={metamask} alt="MetaMask" />
+        Login with MetaMask
+      </Button>
+    </div>
   );
 }
 
-export default ConnectWalletButton;
+export default ConnectWallet;
