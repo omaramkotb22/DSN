@@ -5,7 +5,6 @@ type PostSchema_4 @createModel(description: "A Model that Maps Likes to Posts")
     PostLikesHash: [String!]! @list(maxLength: 10000) @string(maxLength: 10000000)
 }
 
-
 input PostSchemaFiltersInput {
   PostID: StringFilterInput
   PostLikesHash: StringListFilterInput

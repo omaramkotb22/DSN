@@ -39,6 +39,9 @@ In the Terminal:
 - Command to deploy your Composite
     ``` composedb composite:deploy --output=PostSchema_2-composite.json --ceramic-url=http://localhost:7007 --did-private-key=your-private-key ```
 
+- Command to merge the Composite
+
+``` composedb composite:merge composite_1.json composite_2.json --output=name-of-your-merged-composite.json```
 - Command to compile your Composite
 
     ``` composedb composite:compile PostSchema_2-composite.json runtime-PostSchema-composite.json ```
