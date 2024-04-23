@@ -1,48 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Friendship {
-    struct FriendProof {
-        address friendAddress;
-        bytes32 proof;
-        bool isFriend;
-    }
-    
-    mapping(address => FriendProof[]) public friendProofs;
-
-    function requestFriendship(address user1, address user2, bytes32 proof) external {
+contract FriendRequestContract {
+    event FriendRequestSent(uint256 requestId, address indexed requester, address indexed requestee);
+    // Mapping to keep track of friend requests
+    mapping(address => address[]) public friendRequests;
+    // Request ID counter to ensure each request is unique
+    uint256 public requestIdCounter = 0;
+    // Function to send a friend request
+    function sendFriendRequest(address requestee) public {
+        // Increment the request ID counter
+        requestIdCounter++;
         
-        require(user1 != user2, "Cannot send friend request to oneself."); // Ensure a user cannot send a friend request to themselves
+        // Store the friend request
+        friendRequests[requestee].push(msg.sender);
 
-        // Store the friend request with a default 'false' for isFriend
-        friendProofs[user1].push(FriendProof(user2, proof, false));
+        // Emit an event for the frontend to listen to
+        emit FriendRequestSent(requestIdCounter, msg.sender, requestee);
     }
 
-    function acceptFriendship(address userA, address userB, bytes32 proof) external {
-        // Called by User B to confirm a friendship
-        bool requestFound = false;
-        // Iterate through the pending requests of userA to find the matching request
-        for(uint i = 0; i < friendProofs[userA].length; i++) {
-            if(friendProofs[userA][i].friendAddress == userB && friendProofs[userA][i].proof == proof && !friendProofs[userA][i].isFriend) {
-                friendProofs[userA][i].isFriend = true;
-                requestFound = true;
-                // Reciprocally add the friendship to userB's list as well
-                friendProofs[userB].push(FriendProof(userA, proof, true));
-                break;
-            }
-        }
-        require(requestFound, "Friend request not found.");
+    // Function to get friend requests for a user
+    function getFriendRequests(address user) public view returns (address[] memory) {
+        return friendRequests[user];
     }
-
-    function verifyFriendship(address userA, address userB, bytes32 proof) external view returns (bool) {
-        // Iterate over the friends list of userA to verify the friendship
-        for(uint i = 0; i < friendProofs[userA].length; i++) {
-            // Check both the address and proof match and friendship is confirmed
-            if(friendProofs[userA][i].friendAddress == userB && friendProofs[userA][i].proof == proof && friendProofs[userA][i].isFriend) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

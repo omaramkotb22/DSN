@@ -1,0 +1,111 @@
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background: linear-gradient(145deg, #333, #222);
+    color: #FFF;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    border: 1px solid #444; /* subtle border for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
+    margin-bottom: 15px;
+    font-size: 1.75rem;
+    color: #FFCC99; /* A light peach color to highlight user names */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+p {
+    line-height: 1.5;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #DDD; /* Light grey for readability */
+}
+
+button {
+    padding: 12px 25px;
+
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+    font-weight: bold;.container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background: linear-gradient(145deg, #333, #222);
+    color: #FFF;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    border: 1px solid #444; /* subtle border for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
+    margin-bottom: 15px;
+    font-size: 1.75rem;
+    color: #FFCC99; /* A light peach color to highlight user names */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+p {
+    line-height: 1.5;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #DDD; /* Light grey for readability */
+}
+
+button {
+    padding: 12px 25px;
+
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    font-weight: bolder;
+    background-color: #0D6EFD !important; 
+    transform: scale(1.05);
+}
+
+.status-message {
+    margin-top: 20px;
+    font-style: italic;
+    color: #FFCC99;
+    font-size: 0.9rem;
+}
+    letter-spacing: 1px;
+}
+
+button:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    font-weight: bolder;
+    background-color: #0D6EFD !important; 
+    transform: scale(1.05);
+}
+
+.status-message {
+    margin-top: 20px;
+    font-style: italic;
+    color: #FFCC99;
+    font-size: 0.9rem;
+}

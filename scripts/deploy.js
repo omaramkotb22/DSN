@@ -28,12 +28,14 @@ async function main() {
   const post = await postContract.deploy();
   await post.waitForDeployment();
   console.log("PostContract deployed to:", post.target);
-  
-  
+  const friendshipContract = await hre.ethers.getContractFactory("FriendRequestContract");
+  const friendShip = await friendshipContract.deploy();
+  const friendshipDeployment = await friendShip.waitForDeployment();
+  console.log("Friendship deployed to:", friendshipDeployment.target);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

@@ -13,6 +13,7 @@ import {useNavigate, BrowserRouter as Router, Route, Navigate, Routes } from 're
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import ViewUserProfile from './components/ViewUserProfile';
 import PostsABI from './ABIs/PostsABI';
+import ViewNotifications from './components/ViewNotifications';
 
 const ethers = require('ethers');
 
@@ -178,36 +179,40 @@ function App() {
   return (
 
     <Router styles={styles.appContainer}>
-      <div style={{ display: 'flex', height: '100vh'}}>
-      {(isConnected && !isNewUser) &&
-        (     
-          <div>
-          <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <button onClick={toggleSidebar} style={styles.toggleButton}>
-              {sidebarOpen ? <p style={{color: 'red'}}>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
-            </button>
+        {(isConnected && !isNewUser) &&  
+          <div style={styles.headerContainer}>
+            <div> 
+              <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
+              <button onClick={toggleSidebar} style={styles.toggleButton}>
+                {sidebarOpen ? <p style={{color: 'red'}}>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
+              </button>
+            </div>
+
+            <h1 style={styles.header}>
+              A Decentralized Social Network
+            </h1>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <SearchBar />
+              <AccountDetails Address={currentAccount} />
+              <ViewNotifications account={currentAccount} />
+            </div>
           </div>
-        )}
-    
-        <Container style={{ ...styles.mainContainer, marginLeft: sidebarOpen ? '250px' : '0px' }}>
-        {(isConnected && !isNewUser) &&
-          <h1 style={styles.header}>
-            A Decentralized Social Network
-          </h1>
         }
-          {(isConnected && !isNewUser) &&<SearchBar />}
-          <Routes>
-            <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
-            <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
-            <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
-            <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost}/> : <Navigate to="/connect" />} />
-            <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
-            <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
-            <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
-            <Route path="/users/:userAddress" element={<ViewUserProfile />} />
-        </Routes>
+    
+
+      <div>
+        <Container style={{ ...styles.mainContainer, marginLeft: sidebarOpen ? '250px' : '0px' }}>
+            <Routes>
+              <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
+              <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
+              <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
+              <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost}/> : <Navigate to="/connect" />} />
+              <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
+              <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
+              <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
+              <Route path="/users/:userAddress" element={<ViewUserProfile />} />
+            </Routes>
         </Container>
-        {(isConnected && !isNewUser) && <AccountDetails Address={currentAccount} />}
       </div>
     </Router>
   );
@@ -243,6 +248,13 @@ const styles = {
     textShadow: '2px 2px 4px #1F4068', 
     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)', 
     transition: 'all 0.3s ease-in-out', 
+  },
+  headerContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: '20px', 
   }
 };
 

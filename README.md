@@ -50,7 +50,7 @@ In the Terminal:
 
     ``` composedb graphql:server --ceramic-url=http://localhost:7007 --graphiql runtime-post-schema-composite.json --did-private-key=your-private-key --port=5005```
 
-
+ComposeDB and Ceramic treat schemas as immutable once published. Therefore, any change results in a new schema version. Make sure your application handles schema versioning appropriately.
 
 ### Smart Contracts
 
@@ -80,5 +80,9 @@ In the Terminal:
 
 - In the Root Directory Run Command: 
 
-``` yarn start ```
+    - ```yarn add```
+
+    - ``` yarn start ```
+
+
 
