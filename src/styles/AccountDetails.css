@@ -1,26 +1,24 @@
 /* Base styles for the dropdown */
 .account-dropdown {
-    background-color: #343a40; /* Dark base color for dropdown */
+    background-color: #343a40; 
     border: none;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease-in-out;
+    border-radius: 0.60rem;
 }
 
 
 .account-dropdown:hover {
-    background-color: #3a3b3c; /* Subtle hover effect */
+    background-color: #3a3b3c; 
 }
 
 /* Styling for dropdown content */
 .dropdown-content {
-    padding: 15px;
+    padding: 10px;
     color: #ccc;
-    background: linear-gradient(145deg, #333740, #282c34); /* Sophisticated gradient background */
+    background: linear-gradient(145deg, #333740, #282c34);
     border-radius: 0.25rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
     transition: background-color 0.3s ease-in-out;
 }
 .dropdown-detail {
@@ -33,6 +31,22 @@
     font-weight: 800;
     color: #bbb; /* Highlighting username */
     transition: color 0.2s ease-in-out;
+}
+
+
+.profile-pic-container {
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+
+.profile-pic {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
 }
 
 

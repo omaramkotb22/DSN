@@ -17,10 +17,9 @@ function AccountDetails({ Address }){
   const fetchUsername = async () => {
     const queryUsername = gql`
       query Find($input: String!) {
-        userSchemaIndex(
+        userSchema_3Index(
           filters: {
             where: {
-              
               userAddress: {
                 equalTo: $input 
               }
@@ -30,13 +29,12 @@ function AccountDetails({ Address }){
           edges {
             node {
               id
-              usename
+              username
               userAddress
             }
           }
         }
       }
-          
     `
     const result = await client.query({
       query: queryUsername,
@@ -44,8 +42,7 @@ function AccountDetails({ Address }){
         input: Address
       }
     });
-    setUsername(result.data.userSchemaIndex.edges[0].node.usename);
-
+    setUsername(result.data.userSchema_3Index.edges[0].node.username);
   }
   useEffect(() => { 
     fetchUsername();
