@@ -2,49 +2,67 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown, Badge } from 'react-bootstrap';
 import FriendRequestABI from '../ABIs/FriendRequestABI';
 import { ethers } from 'ethers';
+import ViewRequest from './ViewRequest';
 
 const ViewNotifications = ({ account }) => {
-  const friendRequestContractAddress = "0x964268df23aAfbD8256f28a6c26149039Df3073b";
+  const friendRequestContractAddress = "0x93A397D35Bc703cde9dADd1C5b8F0Ae3AEfcbD61";
   const [notifications, setNotifications] = useState([]);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const friendRequestContract = new ethers.Contract(friendRequestContractAddress, FriendRequestABI, signer);
 
-  function listenForFriendRequests() {
-    friendRequestContract.on('FriendRequestSent', (requestId, requester, requestee) => {
-        // Check if the requestee is the current user
-        signer.getAddress().then(friendRequestContractAddress => {
-            if (requestee === friendRequestContractAddress) { // If the requestee is the current user
-                console.log(`You have a new friend request from: ${requester}`);
-                console.log(`Request ID: ${requestId}`);
-
+  useEffect(() => {
+    const updateNotifications = (requestId, requester, requestee, proof) => {
+      signer.getAddress().then(currentAddress => {
+        if (requestee.toLowerCase() === currentAddress.toLowerCase()) {
+          // Update notifications state
+          setNotifications(prevNotifications => [
+            ...prevNotifications,
+            {
+              id: requestId.toString(),
+              requester,
+              requestee,
+              proof
             }
-        });
-    });
-  }
-  listenForFriendRequests();
+          ]);
+          console.log(`You have a new friend request from: ${requester} with Request ID: ${requestId}`);
+        }
+      });
+    };
 
+    friendRequestContract.on('FriendRequestSent', updateNotifications);
 
-  // Function to handle notification click
-  const handleNotificationClick = (notificationId) => {
-    // Handle notification click logic here
-    console.log("Notification clicked:", notificationId);
+    return () => {
+      // Clean up the listener
+      friendRequestContract.off('FriendRequestSent', updateNotifications);
+    };
+  }, [account]); // Reinitialize when account changes
+
+  const handleAccept = (notificationId) => {
+    console.log('Accepting request:', notificationId);
+    setNotifications(notifications.filter(notification => notification.id !== notificationId));
+  };
+
+  const handleReject = (notificationId) => {
+    console.log('Rejecting request:', notificationId);
+    
+    
+    setNotifications(notifications.filter(notification => notification.id !== notificationId));
   };
 
   return (
     <Dropdown>
-      <Dropdown.Toggle variant="light" id="dropdown-notifications">
-        <i className="bi bi-bell"></i>
-        <Badge bg="danger">{notifications.length}</Badge>
+      <Dropdown.Toggle variant="secondary" id="dropdown-notifications">
+        <i className="bi bi-bell-fill"></i> <Badge bg="danger">{notifications.length}</Badge>
       </Dropdown.Toggle>
-      <Dropdown.Menu>
+      <Dropdown.Menu style={{ width: '300px', backgroundColor: '#343a40' }}>
         {notifications.map((notification, index) => (
-          <Dropdown.Item
+          <ViewRequest
             key={index}
-            onClick={() => handleNotificationClick(notification.id)}
-          >
-            {notification.message}
-          </Dropdown.Item>
+            username={notification.requester} // Assuming you want to display the requester's address
+            onAccept={() => handleAccept(notification.id)}
+            onReject={() => handleReject(notification.id)}
+          />
         ))}
       </Dropdown.Menu>
     </Dropdown>

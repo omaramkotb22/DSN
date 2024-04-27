@@ -3,30 +3,20 @@ import { Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 
 function Sidebar({ show }) {
-    const circleSize = 200; // The size of the circular menu
     return (
         <div style={{
-            transform: show ? 'scale(1)' : 'scale(0)',
-            transformOrigin: 'top left',
-            transition: 'transform 0.3s ease',
-            width: `${circleSize}px`,
-            height: `${circleSize}px`,
+            width: '250px', // Width of the sidebar
             position: 'fixed',
-            zIndex: '1',
+            zIndex: '1000',
             top: '0',
-            left: '0',
-            backgroundColor: 'transparent',
-            overflow: 'hidden',
-            borderRadius: '50%', // Making it circular
-            clipPath: 'circle(50%)', // Clipping to a quarter circle
+            left: show ? '0' : '-250px', // Adjust left property based on show
+            bottom: '0',
+            backgroundColor: '#343a40', // Background color of the sidebar
+            transition: 'left 0.5s ease', // Smooth transition for sliding effect
+            overflowX: 'hidden', // Prevent horizontal scroll
         }}>
             <Nav className='flex-column' style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: `${circleSize}px`,
-                height: `${circleSize}px`,
+                height: '100%', // Full height
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -43,7 +33,7 @@ function Sidebar({ show }) {
                 </NavLink>
                 <NavLink to="/communities" style={{margin: '10px'}} >
                     <img src="https://img.icons8.com/material-rounded/96/228BE6/share-2.png" alt="Communities" style={{width: '50px', height: '50px'}} />
-                </NavLink> {/* Assuming you have a route for communities */}
+                </NavLink>
             </Nav>
         </div>
     );

@@ -18,7 +18,7 @@ import ViewNotifications from './components/ViewNotifications';
 const ethers = require('ethers');
 
 function App() {
-  const PostcontractAddress = "0x1F36291C52eFd8BB88C127377cbE994FDFF69082";
+  const PostcontractAddress = "0x20Ca8dE1Aaf34E86e54603B982506813292C3272";
   const [currentAccount, setCurrentAccount] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
@@ -26,10 +26,10 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true); // Adjusted for initial state
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  // Removed navigation logic from here
-
+  const toggleSidebar = () => {
+    setSidebarOpen(prevState => !prevState);
+  };
+  
   useEffect(() => {
     const checkIfWalletIsConnected = async () => {
       const { ethereum } = window;
@@ -54,6 +54,7 @@ function App() {
     setCurrentAccount(account);
     console.log("Connected", account);
   };
+
 
 
   const fetchPosts = async () => {   // Fetch posts from the blockchain
@@ -92,7 +93,7 @@ function App() {
     });
     const postMutation = gql`
       mutation CreatePost($postID: String!, $postLikesHash: [String]!) {
-        createPostSchema_4(input: {
+        createPostSchema_6(input: {
         content: {
           PostID: $postID,
           PostLikesHash: $postLikesHash
@@ -124,7 +125,7 @@ function App() {
     });
     const checkUserQuery = gql`
       query FindIfUserExists($userAddress: String!) { 
-          userSchemaIndex(
+          userSchema_3Index(
             filters: {
               where: {
                 userAddress: {
@@ -136,7 +137,7 @@ function App() {
             edges {
               node {
                 id
-                usename
+                username
                 userAddress
               }
                 }
@@ -149,7 +150,7 @@ function App() {
       })
       console.log(userAddressResults);
       // Checks if Query returns an empty array, if yes then the user is new
-      if((await userAddressResults).data.userSchemaIndex.edges.length === 0){
+      if((await userAddressResults).data.userSchema_3Index.edges.length === 0){
         setIsNewUser(true);
       }
       else {
@@ -179,25 +180,26 @@ function App() {
   return (
 
     <Router styles={styles.appContainer}>
-        {(isConnected && !isNewUser) &&  
-          <div style={styles.headerContainer}>
-            <div> 
-              <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
-              <button onClick={toggleSidebar} style={styles.toggleButton}>
-                {sidebarOpen ? <p style={{color: 'red'}}>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
-              </button>
-            </div>
-
-            <h1 style={styles.header}>
-              A Decentralized Social Network
-            </h1>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <SearchBar />
-              <AccountDetails Address={currentAccount} />
-              <ViewNotifications account={currentAccount} />
-            </div>
-          </div>
-        }
+      {(isConnected && !isNewUser) &&  
+      <div style={styles.headerContainer}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Sidebar show={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <button onClick={toggleSidebar} style={styles.toggleButton}>
+            {sidebarOpen ? <p>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
+          </button>
+          <h1 style={styles.header}>
+            DSN
+          </h1>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <SearchBar style={{position: 'absolute;', bottom:'0'}}/>
+          <div style={{ marginLeft: '10px' }} />
+          <AccountDetails Address={currentAccount} />
+          <div style={{ marginLeft: '50px' }} /> 
+          <ViewNotifications account={currentAccount} />
+        </div>
+      </div>
+    }
     
 
       <div>
@@ -209,8 +211,8 @@ function App() {
               <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost}/> : <Navigate to="/connect" />} />
               <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
               <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
-              <Route path="/profile" element={isConnected ? <Profile /> : <Navigate to="/posts" />} />
-              <Route path="/users/:userAddress" element={<ViewUserProfile />} />
+              <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
+              <Route path="/users/:userAddress" element={<ViewUserProfile currentUser={currentAccount}/>} />
             </Routes>
         </Container>
       </div>
@@ -224,6 +226,7 @@ const styles = {
   },
   mainContainer: {
     flex: 1,
+
     transition: 'margin-left .5s'
   },
   toggleButton: {
@@ -232,9 +235,15 @@ const styles = {
     backgroundColor: 'transparent',
     border: 'none',
     position: 'absolute',
-    top: '0px',
-    left: '0px',
-    color: '#0D6EFD'
+    top: '10px',
+    left: '10px',
+    zIndex: '2000',
+    color: '#0D6EFD',
+    width: '50px', 
+    height: '50px', 
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   header: {
     color: '#EFEFEF', 
@@ -251,7 +260,7 @@ const styles = {
   },
   headerContainer: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
     width: '100%',
     marginBottom: '20px', 

@@ -1,0 +1,45 @@
+.profile-card {
+    background-color: #2C2C2C; /* Dark background for the card */
+    color: #FFF; /* White text color for readability */
+    border-radius: 8px; /* Rounded corners for the card */
+    padding: 20px; /* Padding inside the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+    display: flex;
+    align-items: left; /* Align items in the center vertically */
+    justify-content: space-between; /* Space between the image and text */
+}
+
+.profile-img {
+    width: 100px; /* Fixed size for profile image */
+    height: 100px; /* Keep the image aspect ratio */
+    border-radius: 50%; /* Circle shape */
+    border: 3px solid #0D6EFD; /* Highlight with a blue border */
+    object-fit: cover; /* Ensure the image covers the area */
+}
+
+.profile-details {
+    flex-grow: 1; /* Take available space */
+    padding-left: 20px; /* Space between image and text */
+}
+
+.profile-title {
+    font-size: 24px; /* Large font for username */
+    font-weight: bold; /* Bold font for emphasis */
+    margin-bottom: 5px; /* Space below the username */
+}
+
+.profile-subtitle {
+    font-size: 18px; /* Slightly smaller font for friend count */
+    color: #AAAAAA; /* Lighter color for less emphasis */
+}
+
+.list-group-flush {
+    width: 100%; /* Full width of the card */
+    background-color: transparent; /* Maintain the card's background */
+}
+
+.list-group-item {
+    background-color: #333; /* Darker background for items */
+    border: none; /* No borders for a cleaner look */
+    color: #DDD; /* Lighter text for contrast */
+}

@@ -15,34 +15,36 @@ function CreateProfile({onCreateProfile, account}) {
       cache: new InMemoryCache()
     });
     // Add Profile to Database
-    // ! Note : A typo was made while defining the schema, 
-    // ! Caused username to be called with usename instead
     const createProfileMutation = gql`
-      mutation AddNewUser($bio:String!, $usename: String!, $userAddress:String!){
-        createUserSchema(input: {
-          content: {
-            bio: $bio
-            usename: $usename
-            userAddress: $userAddress
-            
-          }
-        }) {
-          document {
-            id
-            bio
-            usename
-            userAddress
-          }
+        mutation AddNewUser($username:String!,$profilepic: String! , $bio: String!, $userAddress: String!) {
+            createUserSchema_3(
+              input: {
+              content: {
+                bio: $bio
+                username: $username
+                userAddress: $userAddress
+                profilepic: $profilepic
+              }
+            }) {
+              
+              document {
+                  id
+                  bio
+                  username
+                  userAddress
+                }
+              
+                }
         }
-      }
     `;
     try {
       await client.mutate({
         mutation: createProfileMutation,
         variables: {
           bio: bio,
-          usename: username, 
+          username: username, 
           userAddress: account,
+          profilepic: 'https://wallpapers.com/images/featured/picture-en3dnh2zi84sgt3t.jpg'
         }
       });
       navigate('/posts');

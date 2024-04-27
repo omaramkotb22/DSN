@@ -10,7 +10,7 @@ const UserChecker = ({ onNewUser }) => {
       });
       const query = gql`
         query {
-        userSchemaIndex(first:1) {
+        userSchema_3Index(first:1) {
           edges {
             node {
               id
@@ -24,7 +24,7 @@ const UserChecker = ({ onNewUser }) => {
         query: query
       }).then((data) => {
         // If no user exists
-        if (data.data.userSchemaIndex.edges.length === 0) {
+        if (data.data.userSchema_3Index.edges.length === 0) {
           onNewUser(true);
           navigate('/create-profile'); // Redirect to create-profile page
         }

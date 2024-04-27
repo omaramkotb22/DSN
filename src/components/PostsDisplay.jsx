@@ -32,7 +32,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     // Returns Length of the Likes array (Number of likes on a post)
         const query = gql`
         query GetPostLikes($input: String!){
-            postSchema_4Index(
+            postSchema_6Index(
                 filters: {
                 where:{
                     PostID: {
@@ -55,8 +55,8 @@ function PostsDisplay({ posts, fetchPosts }) {
                 query,
                 variables: {input: postID}
             });    
-            if (result.data.postSchema_4Index.edges.length > 0 && result.data.postSchema_4Index.edges[0].node) {
-                const likeCounts = result.data.postSchema_4Index.edges[0].node.PostLikesHash.length;
+            if (result.data.postSchema_6Index.edges.length > 0 && result.data.postSchema_6Index.edges[0].node) {
+                const likeCounts = result.data.postSchema_6Index.edges[0].node.PostLikesHash.length;
                 return likeCounts;
 
             } else {
@@ -76,7 +76,7 @@ function PostsDisplay({ posts, fetchPosts }) {
         // Since the update mutation requires the ID of the post
         const query = gql`
             query GetID($input: String!) {
-            postSchema_4Index(
+            postSchema_6Index(
                 filters: {
                 where:{
                     PostID: {
@@ -98,19 +98,13 @@ function PostsDisplay({ posts, fetchPosts }) {
             variables: {input: PostID}
             });
         
-        // * Because Apollo, GraphQL and Compose DB      are   all 
-        // * autistic tools, the only way you can update the likes 
-        // * is to create an array that is a copy of the  existing 
-        // * array that and add the new hash into it then  replace
-        // * the copied array into it. 
-        // * iow, you cant append directly :)
-        const id = result.data.postSchema_4Index.edges[0].node.id;
-        const likes = result.data.postSchema_4Index.edges[0].node.PostLikesHash;
+        const id = result.data.postSchema_Index.edges[0].node.id;
+        const likes = result.data.postSchema_6Index.edges[0].node.PostLikesHash;
         const likesCopy = [...likes, LikeHash];
         // Now, we can update the likes array of the post
         const updateMutation = gql`
         mutation UpdatePostLikes($id: ID!, $PostID: String!, $PostLikesHash: [String!]!) {
-            updatePostSchema_4(input: {
+            updatePostSchema_6(input: {
                 id: $id
                 content: {
                     PostID: $PostID,
@@ -146,7 +140,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     const [liked, setLiked] = useState(false);
 
 
-    const postContractAddress = '0x1F36291C52eFd8BB88C127377cbE994FDFF69082';
+    const postContractAddress = '0x20Ca8dE1Aaf34E86e54603B982506813292C3272';
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = web3Provider.getSigner();
     const postContract = new ethers.Contract(postContractAddress, PostsABI, signer);
@@ -211,8 +205,11 @@ function PostsDisplay({ posts, fetchPosts }) {
                             <i className={`bi ${liked ? 'bi-heart-fill' : 'bi-heart'}`}></i> {likeCounts[index]}
                         </Button>
                         <Card.Footer style={{ marginTop: '15px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}> 
                             <small className="text-muted-dark" >Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
-                            {/* <Button variant="link" onClick={() => console.log('Author:', post.author)}>Author</Button> */}
+                            <Button variant="link" style={{padding:'0px'}}>{post.author}</Button>
+                            </div>
+
                         </Card.Footer>
                     </Card.Body>
                 </Card>

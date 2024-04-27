@@ -19,6 +19,12 @@ const FriendRequestABI = [
         "internalType": "address",
         "name": "requestee",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "proof",
+        "type": "string"
       }
     ],
     "name": "FriendRequestSent",
@@ -68,6 +74,25 @@ const FriendRequestABI = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "proofs",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "requestIdCounter",
     "outputs": [
@@ -89,7 +114,13 @@ const FriendRequestABI = [
       }
     ],
     "name": "sendFriendRequest",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   }
