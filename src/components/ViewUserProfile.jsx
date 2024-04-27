@@ -1,39 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { Button } from 'react-bootstrap';
-// import '../styles/ViewUserProfile.css';
 import FriendRequestABI from '../ABIs/FriendRequestABI';
+import { sendFriendRequest } from '../services/FriendRequestService';
+import '../styles/ViewUserProfile.css';
 
-
-function ViewUserProfile() {
-  // !If the current user searches for themselves, they should see their own profile route
+function ViewUserProfile({ currentUser }) {
   const { state } = useLocation();
   const { user } = state;
   const [status, setStatus] = useState('');
-  const [contract, setContract] = useState(null);
 
-  const sendFriendRequest = async () => {
+  const handleSendFriendRequest = async () => {
     try {
-      const friendRequestContractAddress = "0x964268df23aAfbD8256f28a6c26149039Df3073b";
+      const friendRequestContractAddress = "0x93A397D35Bc703cde9dADd1C5b8F0Ae3AEfcbD61";
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner(); 
       const friendRequestContract = new ethers.Contract(friendRequestContractAddress, FriendRequestABI, signer);
-      const tx = await friendRequestContract.sendFriendRequest(user.userAddress);
-      await tx.wait();
-      setStatus('pending');
-    } catch (error) {
-      setStatus('Error sending friend request');
-    }
-  }
 
-  
+      const tx = await friendRequestContract.sendFriendRequest(user.userAddress);
+      const receipt = await tx.wait();
+      const proof = receipt.events[0].args.proof;
+
+      await sendFriendRequest(currentUser, user.userAddress, proof);
+      setStatus('Request sent with proof: ' + proof);
+    } catch (error) {
+      setStatus('Error sending friend request: ' + error.message);
+    }
+  };
+
   return (
-    <div className='container'>
-      <h2>{user.usename}</h2>
-      <p>{user.bio}</p>
+    <div className='view-user-container'>
+      <h2 className='view-user-h2'>{user.username}</h2>
+      <p className='view-user-p'>{user.bio}</p>
       <p>{user.userAddress}</p>
-      <Button onClick={sendFriendRequest} variant="light" >Request</Button>
+      <Button onClick={handleSendFriendRequest} variant="light" className='view-user-button'>Request</Button>
       <p className="status-message">{status}</p>
     </div>
   );
