@@ -8,6 +8,7 @@ contract PostContract {
         string title; // The title of the post
         string content; // The content of the post
         uint256 timestamp; 
+        string imageHash;
     }
 
     //  Mapping from post index to a mapping of liker's addresses 
@@ -23,9 +24,17 @@ contract PostContract {
 
     function writePost(string memory _title, string memory _content) public {
         lastPostId++; // Increment the last post id
-        Post memory newPost = Post(lastPostId, msg.sender, _title, _content, block.timestamp);
+        Post memory newPost = Post(lastPostId, msg.sender, _title, _content, block.timestamp, "");
         posts.push(newPost);
         
+        emit PostWritten(lastPostId, msg.sender);
+    }
+
+    function writePostWithImage(string memory _title, string memory _content, string memory _imageHash) public {
+        lastPostId++; // Increment the last post id
+        Post memory newPost = Post(lastPostId, msg.sender, _title, _content, block.timestamp, _imageHash);
+        posts.push(newPost);
+
         emit PostWritten(lastPostId, msg.sender);
     }
 

@@ -21,7 +21,7 @@ function Profile({ currentUser }) {
     const fetchUsername = async () => {
         const query = gql`
           query FindUser($input: String!) {
-            userSchema_3Index(
+            userSchema_4Index(
               filters: {
                 where: {
                   userAddress: {
@@ -47,8 +47,8 @@ function Profile({ currentUser }) {
             input: currentUser
           }
         });
-        if (result.data.userSchema_3Index.edges.length > 0) {
-            const userNode = result.data.userSchema_3Index.edges[0].node;
+        if (result.data.userSchema_4Index.edges.length > 0) {
+            const userNode = result.data.userSchema_4Index.edges[0].node;
             setUsername(userNode.username);
             setProfileImageUrl(userNode.profilepic);
         }

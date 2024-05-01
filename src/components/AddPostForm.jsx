@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 
-function AddPostForm({ newPost, setNewPost, onWritePost}) { // onWritePost is in App.js
+function AddPostForm({ newPost, setNewPost, onWritePost, onFileChange}) { 
 
   
-  
+  useEffect(() => {
+    console.log('New post:', newPost);
+  }); 
   return (
     <Form>
       <Form.Group className="mb-3" controlId="formTitle">
@@ -25,6 +27,8 @@ function AddPostForm({ newPost, setNewPost, onWritePost}) { // onWritePost is in
           value={newPost.content}
           onChange={e => setNewPost({ ...newPost, content: e.target.value })}
         />
+        <Form.Label>Image</Form.Label>
+        <Form.Control type="file" onChange={onFileChange} />
       </Form.Group>
       <Button variant="primary" onClick={onWritePost}>
         Write Post

@@ -1,4 +1,4 @@
-const FriendRequestABI = [
+const FriendRequestABI =  [
   {
     "anonymous": false,
     "inputs": [
@@ -125,6 +125,5 @@ const FriendRequestABI = [
     "type": "function"
   }
 ]
-
 
 export default FriendRequestABI;

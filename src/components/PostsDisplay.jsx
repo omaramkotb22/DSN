@@ -1,5 +1,5 @@
 import {React, useEffect, useState} from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Card, Button, Modal } from 'react-bootstrap';
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
 import '../styles/PostsDisplay.css';
 import 'bootstrap-icons/font/bootstrap-icons.css'; 
@@ -9,7 +9,17 @@ import PostsABI from '../ABIs/PostsABI';
 
 
 function PostsDisplay({ posts, fetchPosts }) {
+    const [showModal, setShowModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState('');
 
+    const handleShowModal = (imageHash) => {
+        setSelectedImage(`https://gateway.pinata.cloud/ipfs/${imageHash}`);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
     useEffect(() => {
         fetchPosts();
         const fetchLikes = async () => {
@@ -32,7 +42,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     // Returns Length of the Likes array (Number of likes on a post)
         const query = gql`
         query GetPostLikes($input: String!){
-            postSchema_6Index(
+            postSchema_7Index(
                 filters: {
                 where:{
                     PostID: {
@@ -55,8 +65,8 @@ function PostsDisplay({ posts, fetchPosts }) {
                 query,
                 variables: {input: postID}
             });    
-            if (result.data.postSchema_6Index.edges.length > 0 && result.data.postSchema_6Index.edges[0].node) {
-                const likeCounts = result.data.postSchema_6Index.edges[0].node.PostLikesHash.length;
+            if (result.data.postSchema_7Index.edges.length > 0 && result.data.postSchema_7Index.edges[0].node) {
+                const likeCounts = result.data.postSchema_7Index.edges[0].node.PostLikesHash.length;
                 return likeCounts;
 
             } else {
@@ -76,7 +86,7 @@ function PostsDisplay({ posts, fetchPosts }) {
         // Since the update mutation requires the ID of the post
         const query = gql`
             query GetID($input: String!) {
-            postSchema_6Index(
+            postSchema_7Index(
                 filters: {
                 where:{
                     PostID: {
@@ -98,13 +108,13 @@ function PostsDisplay({ posts, fetchPosts }) {
             variables: {input: PostID}
             });
         
-        const id = result.data.postSchema_Index.edges[0].node.id;
-        const likes = result.data.postSchema_6Index.edges[0].node.PostLikesHash;
+        const id = result.data.postSchema_7Index.edges[0].node.id;
+        const likes = result.data.postSchema_7Index.edges[0].node.PostLikesHash;
         const likesCopy = [...likes, LikeHash];
         // Now, we can update the likes array of the post
         const updateMutation = gql`
         mutation UpdatePostLikes($id: ID!, $PostID: String!, $PostLikesHash: [String!]!) {
-            updatePostSchema_6(input: {
+            updatePostSchema_7(input: {
                 id: $id
                 content: {
                     PostID: $PostID,
@@ -140,7 +150,7 @@ function PostsDisplay({ posts, fetchPosts }) {
     const [liked, setLiked] = useState(false);
 
 
-    const postContractAddress = '0x20Ca8dE1Aaf34E86e54603B982506813292C3272';
+    const postContractAddress = process.env.REACT_APP_POSTS_CONTRACT_ADDRESS;
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = web3Provider.getSigner();
     const postContract = new ethers.Contract(postContractAddress, PostsABI, signer);
@@ -189,31 +199,43 @@ function PostsDisplay({ posts, fetchPosts }) {
     return (
         <div className='post-container'>
             {posts.map((post, index) => (
-                <Card 
-                    key={index} 
-                    className="post-card"
-
-                >
+                <Card key={index} className="post-card">
                     <Card.Body>
                         <Card.Title>{post.title}</Card.Title>
                         <Card.Text>{post.content}</Card.Text>
-                        <Button 
+                        {post.imageHash && (
+                            <img
+                                src={`https://gateway.pinata.cloud/ipfs/${post.imageHash}`}
+                                alt="Post"
+                                style={{ cursor: 'pointer', maxWidth: '100px' }} // Thumbnail size
+                                onClick={() => handleShowModal(post.imageHash)}
+                            />
+                        )}
+                        <Button
                             variant='outline-light'
                             className='like-button'
                             onClick={() => handleLike(index)}
                         >
                             <i className={`bi ${liked ? 'bi-heart-fill' : 'bi-heart'}`}></i> {likeCounts[index]}
                         </Button>
-                        <Card.Footer style={{ marginTop: '15px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}> 
-                            <small className="text-muted-dark" >Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
-                            <Button variant="link" style={{padding:'0px'}}>{post.author}</Button>
-                            </div>
-
-                        </Card.Footer>
                     </Card.Body>
+                    <Card.Footer style={{ marginTop: '15px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <small className="text-muted-dark">Posted at {new Date(post.timestamp * 1000).toLocaleString()}</small>
+                            <Button variant="link" style={{ padding: '0px' }}>{post.author}</Button>
+                        </div>
+                    </Card.Footer>
                 </Card>
             ))}
+
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{post.title}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <img src={selectedImage} alt="Post Full" style={{ width: '100%' }} />
+                </Modal.Body>
+            </Modal>
         </div>
     );
 

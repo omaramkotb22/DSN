@@ -17,7 +17,7 @@ function AccountDetails({ Address }){
   const fetchUsername = async () => {
     const queryUsername = gql`
       query Find($input: String!) {
-        userSchema_3Index(
+        userSchema_4Index(
           filters: {
             where: {
               userAddress: {
@@ -42,7 +42,7 @@ function AccountDetails({ Address }){
         input: Address
       }
     });
-    setUsername(result.data.userSchema_3Index.edges[0].node.username);
+    setUsername(result.data.userSchema_4Index.edges[0].node.username);
   }
   useEffect(() => { 
     fetchUsername();

@@ -1,4 +1,4 @@
-const PostsABI =  [
+const PostsABI = [
   {
     "anonymous": false,
     "inputs": [
@@ -134,6 +134,11 @@ const PostsABI =  [
             "internalType": "uint256",
             "name": "timestamp",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "imageHash",
+            "type": "string"
           }
         ],
         "internalType": "struct PostContract.Post[]",
@@ -225,6 +230,11 @@ const PostsABI =  [
         "internalType": "uint256",
         "name": "timestamp",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "imageHash",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -247,7 +257,30 @@ const PostsABI =  [
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_title",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_content",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_imageHash",
+        "type": "string"
+      }
+    ],
+    "name": "writePostWithImage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
-];
+]
 
 export default PostsABI;

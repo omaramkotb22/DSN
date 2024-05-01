@@ -16,7 +16,7 @@ function SearchBar() {
   const findUserByUsername = async (username) => {
     const query = gql`
       query SearchUser($term: String!) {
-        userSchema_3Index(filters: { 
+        userSchema_4Index(filters: { 
           where: {
             
                 username: {
@@ -39,8 +39,8 @@ function SearchBar() {
         query: query,
         variables: { term: username }
       });
-      if (result.data.userSchema_3Index.edges.length > 0) {
-        const user = result.data.userSchema_3Index.edges[0].node; // Get the first user with the same username
+      if (result.data.userSchema_4Index.edges.length > 0) {
+        const user = result.data.userSchema_4Index.edges[0].node; // Get the first user with the same username
         navigate(`/users/${user.userAddress}`, { state: { user } });
       } else {
         console.log("No user found.");

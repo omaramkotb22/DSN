@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container } from 'react-bootstrap';
+import {create} from 'ipfs-http-client';
+import axios from 'axios';
+import FormData from 'form-data';
+
+// Components 
 import ConnectWalletButton from './components/ConnectWallet';
 import AddPostForm from './components/AddPostForm';
 import PostsDisplay from './components/PostsDisplay';
@@ -15,47 +20,111 @@ import ViewUserProfile from './components/ViewUserProfile';
 import PostsABI from './ABIs/PostsABI';
 import ViewNotifications from './components/ViewNotifications';
 
+// Hooks 
+import { useEthereum } from './hooks/useEthereum';
+
+
 const ethers = require('ethers');
 
 function App() {
-  const PostcontractAddress = "0x20Ca8dE1Aaf34E86e54603B982506813292C3272";
-  const [currentAccount, setCurrentAccount] = useState(null);
+  const { currentAccount, isConnected, setIsConnected,requestAccount } = useEthereum();
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
-  const [isConnected, setIsConnected] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true); // Adjusted for initial state
+  const PostcontractAddress = process.env.REACT_APP_POSTS_CONTRACT_ADDRESS;
 
   const toggleSidebar = () => {
     setSidebarOpen(prevState => !prevState);
   };
-  
-  useEffect(() => {
-    const checkIfWalletIsConnected = async () => {
-      const { ethereum } = window;
-      if (ethereum) {
-        console.log("We have the ethereum object", ethereum);
-        try {
-          const accounts = await ethereum.request({ method: 'eth_accounts' });
-          if (accounts.length > 0) {
-            setCurrentAccount(accounts[0]);
-            setIsConnected(true);
-          }
-        } catch (err) {
-          console.error(err);
-        }
+
+  const handleFileUpload = async (file) => {
+    const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const metadata = JSON.stringify({
+        name: file.name,
+        keyvalues: { exampleKey: 'exampleValue' }
+    });
+    formData.append('pinataMetadata', metadata);
+
+    const pinataOptions = JSON.stringify({
+        cidVersion: 0
+    });
+    formData.append('pinataOptions', pinataOptions);
+
+    try {
+        const response = await axios.post(url, formData, {
+            headers: {
+                'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIxNWUzNWI0ZC0wM2NhLTQxZDEtODY4MS0xMGQwOGJiZjAyZjQiLCJlbWFpbCI6Im9tYXJhbWtvdGIyMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNDEwMDZlMzY4NDA0MTYxNjI2OTIiLCJzY29wZWRLZXlTZWNyZXQiOiJmZjczMjY3NTVhYmNlYjdhMDdjZWY0MWU1ZDljYTYxYjFkYzZhYTAyNGM3MjcxYzIyOWI3ZWZlYmY1YjI3Y2Y2IiwiaWF0IjoxNzE0NTIwNzQzfQ.RKDHFjyvDHy6ww0HqpuKNItyNIKNso_SXTHegeRec8w`
+            }
+        });
+        console.log('IPFS response:', response.data);
+        return response.data.IpfsHash; // Return the IPFS hash of the uploaded file
+    } catch (error) {
+        console.error('Error uploading file to IPFS:', error.response ? error.response.data : error);
+        return null;
+    }
+};
+
+// Include this function in the part where you handle post creation
+const onFileChange = async (event) => {
+      const file = event.target.files[0];
+      const imageHash = await handleFileUpload(file);
+      console.log('Image hash:', imageHash);
+      if (imageHash) {
+          const title = newPost.title;
+          const content = newPost.content;
+          await createPostWithImage(title, content, imageHash); // Assume createPostWithImage is a function that handles posting
+      } else {
+          console.error('Failed to upload image to IPFS');
       }
-    };
-    checkIfWalletIsConnected();
-  }, []);
+};
 
-  const requestAccount = async () => {
-    const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    setCurrentAccount(account);
-    console.log("Connected", account);
-  };
+  const createPostWithImage = async (title, content, imageHash) => {
+    if (!title || !content || !imageHash) return;
 
-
+    if (typeof window.ethereum !== 'undefined') {
+        await requestAccount(); // Ensure this function correctly prompts the user to connect their wallet
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(PostcontractAddress, PostsABI, signer);
+        
+        try {
+            const transaction = await contract.writePostWithImage(title, content, imageHash);
+            await transaction.wait();
+            const postId = await contract.getLastPostId();
+            handleDatabaseOnWritePost(postId.toString()); // Ensure this handles database logic correctly
+            setNewPost({ title: '', content: '' }); // Reset form state
+            console.log('Post created with ID:', postId.toString());
+        } catch (error) {
+            console.error('Failed to create post with image:', error);
+        }
+    } else {
+        console.error('Ethereum object not found');
+    }
+};
+  
+  // useEffect(() => {
+  //   const checkIfWalletIsConnected = async () => {
+  //     const { ethereum } = window;
+  //     if (ethereum) {
+  //       console.log("We have the ethereum object", ethereum);
+  //       try {
+  //         const accounts = await ethereum.request({ method: 'eth_accounts' });
+  //         if (accounts.length > 0) {
+  //           setCurrentAccount(accounts[0]);
+  //           setIsConnected(true);
+  //         }
+  //       } catch (err) {
+  //         console.error(err);
+  //       }
+  //     }
+  //   };
+  //   checkIfWalletIsConnected();
+  // }, []);
 
   const fetchPosts = async () => {   // Fetch posts from the blockchain
 
@@ -64,6 +133,7 @@ function App() {
       const contract = new ethers.Contract(PostcontractAddress, PostsABI, provider);
       try {
         const data = await contract.getPosts();
+        console.log("Posts: ", data);
         setPosts(data);
       } catch (err) {
         console.error("Error: ", err);
@@ -80,7 +150,7 @@ function App() {
       const transaction = await contract.writePost(newPost.title, newPost.content);
       await transaction.wait();
       const postId = await contract.getLastPostId();
-      
+      console.log("Writing Post");
       handleDatabaseOnWritePost(postId.toString());
       setNewPost({ title: '', content: '' }); // Reset form after submission
       fetchPosts(); // Fetch all posts again to update UI
@@ -93,7 +163,7 @@ function App() {
     });
     const postMutation = gql`
       mutation CreatePost($postID: String!, $postLikesHash: [String]!) {
-        createPostSchema_6(input: {
+        createPostSchema_7(input: {
         content: {
           PostID: $postID,
           PostLikesHash: $postLikesHash
@@ -125,7 +195,7 @@ function App() {
     });
     const checkUserQuery = gql`
       query FindIfUserExists($userAddress: String!) { 
-          userSchema_3Index(
+          userSchema_4Index(
             filters: {
               where: {
                 userAddress: {
@@ -150,7 +220,7 @@ function App() {
       })
       console.log(userAddressResults);
       // Checks if Query returns an empty array, if yes then the user is new
-      if((await userAddressResults).data.userSchema_3Index.edges.length === 0){
+      if((await userAddressResults).data.userSchema_4Index.edges.length === 0){
         setIsNewUser(true);
       }
       else {
@@ -177,6 +247,68 @@ function App() {
     }
   }, [currentAccount]); 
 
+
+  const styles = {
+    appContainer: {
+      display: 'flex',
+      height: '100vh'
+    },
+    mainContainer: {
+      flex: 1,
+  
+      transition: 'margin-left .5s'
+    },
+  
+    toggleButton: {
+      fontSize: '30px',
+      cursor: 'pointer',
+      backgroundColor: 'transparent',
+      border: 'none',
+      position: 'absolute',
+      top: '10px',
+      left: '10px',
+      zIndex: '2000',
+      color: '#0D6EFD',
+      width: '50px', 
+      height: '50px', 
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+      dsnLogo: {
+      fontSize: '32px',
+      fontWeight: 'bold',
+      color: '#0D6EFD',
+      position: 'absolute',
+      top: '10px',
+      left: '70px',
+      zIndex: '100',
+      transition: 'transform 0.5s ease', 
+      transform: sidebarOpen ? 'translateX(250px)' : 'translateX(0px)'
+    },
+    header: {
+      color: '#EFEFEF', 
+      backgroundColor: '#162447', 
+      border: '1px solid #1F4068',
+      borderRadius: '5px', 
+      display: 'inline-block',
+      padding: '10px 20px',
+      fontFamily: 'Arial, sans-serif', 
+      fontWeight: 'bold',
+      textShadow: '2px 2px 4px #1F4068', 
+      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)', 
+      transition: 'all 0.3s ease-in-out', 
+    },
+    headerContainer: {
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      width: '100%',
+      marginBottom: '20px', 
+    }
+  };
+
+
   return (
 
     <Router styles={styles.appContainer}>
@@ -187,7 +319,7 @@ function App() {
           <button onClick={toggleSidebar} style={styles.toggleButton}>
             {sidebarOpen ? <p>✖️</p> : <p style={{color:"#0D6EFD"}}>☰</p>}
           </button>
-          <h1 style={styles.header}>
+          <h1 style={styles.dsnLogo}>
             DSN
           </h1>
         </div>
@@ -200,6 +332,8 @@ function App() {
         </div>
       </div>
     }
+
+    
     
 
       <div>
@@ -208,7 +342,7 @@ function App() {
               <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
               <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
               <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
-              <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={writePost}/> : <Navigate to="/connect" />} />
+              <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={createPostWithImage} onFileChange={onFileChange}/> : <Navigate to="/connect" />} />
               <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
               <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
               <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
@@ -219,52 +353,7 @@ function App() {
     </Router>
   );
 }
-const styles = {
-  appContainer: {
-    display: 'flex',
-    height: '100vh'
-  },
-  mainContainer: {
-    flex: 1,
 
-    transition: 'margin-left .5s'
-  },
-  toggleButton: {
-    fontSize: '30px',
-    cursor: 'pointer',
-    backgroundColor: 'transparent',
-    border: 'none',
-    position: 'absolute',
-    top: '10px',
-    left: '10px',
-    zIndex: '2000',
-    color: '#0D6EFD',
-    width: '50px', 
-    height: '50px', 
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  header: {
-    color: '#EFEFEF', 
-    backgroundColor: '#162447', 
-    border: '1px solid #1F4068',
-    borderRadius: '5px', 
-    display: 'inline-block',
-    padding: '10px 20px',
-    fontFamily: 'Arial, sans-serif', 
-    fontWeight: 'bold',
-    textShadow: '2px 2px 4px #1F4068', 
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)', 
-    transition: 'all 0.3s ease-in-out', 
-  },
-  headerContainer: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: '20px', 
-  }
-};
+
 
 export default App;

@@ -1,29 +1,36 @@
+import { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 
-
-function useEthereum() {
+export const useEthereum = () => {
     const [currentAccount, setCurrentAccount] = useState(null);
-  
+    const [isConnected, setIsConnected] = useState(false);
+
     useEffect(() => {
-      async function checkIfWalletIsConnected() {
-        if (window.ethereum) {
-          try {
-            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-            if (accounts.length > 0) {
-              setCurrentAccount(accounts[0]);
+        const checkIfWalletIsConnected = async () => {
+            const { ethereum } = window;
+            if (!ethereum) {
+                console.error("Ethereum object not found");
+                return;
             }
-          } catch (err) {
-            console.error(err);
-          }
-        }
-      }
-  
-      checkIfWalletIsConnected();
+            const accounts = await ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length > 0) {
+                setCurrentAccount(accounts[0]);
+                setIsConnected(true);
+            }
+        };
+        checkIfWalletIsConnected();
     }, []);
-  
+
     const requestAccount = async () => {
-      const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      setCurrentAccount(account);
+        const { ethereum } = window;
+        if (!ethereum) {
+            console.error("Ethereum object not found");
+            return;
+        }
+        const [account] = await ethereum.request({ method: 'eth_requestAccounts' });
+        setCurrentAccount(account);
+        setIsConnected(true);
     };
-  
-    return { currentAccount, requestAccount };
-  }
+
+    return { currentAccount, isConnected, requestAccount, setIsConnected };
+};

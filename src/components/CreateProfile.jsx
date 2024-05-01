@@ -17,7 +17,7 @@ function CreateProfile({onCreateProfile, account}) {
     // Add Profile to Database
     const createProfileMutation = gql`
         mutation AddNewUser($username:String!,$profilepic: String! , $bio: String!, $userAddress: String!) {
-            createUserSchema_3(
+            createUserSchema_4(
               input: {
               content: {
                 bio: $bio

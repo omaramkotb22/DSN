@@ -8,7 +8,7 @@ const client = new ApolloClient({
 export const sendFriendRequest = async (currentUser, userAddress, proof) => {
     const addProof = gql`
         mutation AddProof($requesteeAddress: String!, $friendshipProof: String!, $requesterAddress: String!) {
-            createFriendshipSchema_3(
+            createFriendshipSchema_4(
                 input: {
                     content: {
                         friendshipProof: $friendshipProof, 

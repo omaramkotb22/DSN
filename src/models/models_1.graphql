@@ -1,4 +1,4 @@
-type UserSchema_3 @createModel(description: "A User Model")
+type UserSchema_4 @createModel(description: "A User Model")
     @createIndex(fields: [{path: "userAddress"}, {path: "username"}])
 {
   userAddress: String! @string(maxLength: 100)
@@ -24,7 +24,7 @@ input StringFilterInput {
 }
  
 
-type PostSchema_6 @createModel(description: "A Model that Maps Likes to Posts")
+type PostSchema_7 @createModel(description: "A Model that Maps Likes to Posts")
     @createIndex(fields: [{path: "PostID"}])
 {
     PostID: String! @string(maxLength: 100)
@@ -54,7 +54,7 @@ input StringListFilterInput {
   nin: [[String]]
 }
 
-type FriendshipSchema_3 @createModel(description: "A Model to Manage Friendships and Proofs") {
+type FriendshipSchema_4 @createModel(description: "A Model to Manage Friendships and Proofs") {
   requesterAddress: String! @string(maxLength: 100)
   requesteeAddress: String! @string(maxLength: 100)
   friendshipProof: String! @string(maxLength: 10000) # The cryptographic proof

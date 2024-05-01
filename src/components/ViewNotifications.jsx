@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import ViewRequest from './ViewRequest';
 
 const ViewNotifications = ({ account }) => {
-  const friendRequestContractAddress = "0x93A397D35Bc703cde9dADd1C5b8F0Ae3AEfcbD61";
+  const friendRequestContractAddress = process.env.REACT_APP_FRIENDSHIP_CONTRACT_ADDRESS;
   const [notifications, setNotifications] = useState([]);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
