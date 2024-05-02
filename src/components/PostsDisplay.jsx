@@ -65,4 +65,6 @@ function PostsDisplay({ currentAccount }) {
     );
 }
 
+
+
 export default PostsDisplay;

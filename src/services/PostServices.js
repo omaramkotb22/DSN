@@ -17,11 +17,13 @@ export async function fetchPostsAndLikes(currentAccount) {
     
     try {
         const friends = await friendContract.getFriends(currentAccount);
+        const postsData = await postContract.getPosts();
+
         if (friends.length === 0) {
             return { posts: [], likeCounts: [], hasNoFriends: true };
         }
+
         const friendAddresses = friends.map(friend => friend.toLowerCase());
-        const postsData = await postContract.getPosts();
         const filteredPosts = postsData.filter(post => friendAddresses.includes(post.author.toLowerCase()));
 
         const likeCounts = await Promise.all(filteredPosts.map(async post => {
@@ -37,6 +39,7 @@ export async function fetchPostsAndLikes(currentAccount) {
 }
 
 
+
 export async function fetchAllPosts() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const postContract = new ethers.Contract(process.env.REACT_APP_POSTS_CONTRACT_ADDRESS, PostsABI, provider);
@@ -45,7 +48,7 @@ export async function fetchAllPosts() {
         const postsData = await postContract.getPosts();
         const likeCounts = await Promise.all(postsData.map(async post => {
             const likeCount = await getLikesForAPost(post.id.toString(), provider); // Assuming getLikesForAPost function exists
-            return likeCount.length;
+            return likeCount;
         }));
 
         return { posts: postsData, likeCounts };

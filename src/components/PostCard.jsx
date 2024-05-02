@@ -24,7 +24,7 @@ function PostCard({ post, index, handleLike, handleShowModal, liked, likeCounts 
                     className='like-button'
                     onClick={() => handleLike(index)}
                 >
-                    <i className={`bi ${liked ? 'bi-heart-fill' : 'bi-heart'}`}></i> {likeCounts[index]}
+                    <i className={`bi ${liked ? 'bi-heart-fill' : 'bi-heart'}`}></i> {likeCounts}
                 </Button>
             </Card.Body>
             <Card.Footer style={{ marginTop: '15px' }}>

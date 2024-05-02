@@ -36,7 +36,8 @@ function Communities() {
                     key={index}
                     post={post}
                     handleShowModal={() => handleShowModal(post.imageHash)}
-                    likeCounts={likeCounts[index] || 0}
+                    likeCounts={likeCounts[index]}
+                    handleLike={() => console.log("handleLike(index)")}
                 />
             ))}
             <Modal show={showModal} onHide={handleCloseModal} centered>

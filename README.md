@@ -57,7 +57,7 @@ ComposeDB and Ceramic treat schemas as immutable once published. Therefore, any 
 
 - To Compile the Smart Contracts Run in the root dierectory the following command:
 
-- For some reason, the most recent ethers does not work well with react-routers, for this I have to change from `ethers@6.0.2` to `ethers@5.7.2` when I need to run the React Application.
+- The most recent ethers does not work well with react-routers, for this I have to change from `ethers@6.0.2` to `ethers@5.7.2` when I need to run the React Application.
     
     ``` npx hardhat compile ```
 

@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 
 function AddPostForm({ newPost, setNewPost, onWritePost, onFileChange}) { 
-
-  
   useEffect(() => {
     console.log('New post:', newPost);
   }); 

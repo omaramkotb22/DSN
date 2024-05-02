@@ -9,6 +9,7 @@ function AccountDetails({ Address }){
   
   const [username, setUsername] = useState("");
   const [copied, setCopied] = useState(false);
+  const [profilePic, setProfilePic] = useState("");
   const client = new ApolloClient({
     uri: 'http://localhost:5005/graphql',
     cache: new InMemoryCache()
@@ -31,6 +32,7 @@ function AccountDetails({ Address }){
               id
               username
               userAddress
+              profilepic
             }
           }
         }
@@ -43,6 +45,7 @@ function AccountDetails({ Address }){
       }
     });
     setUsername(result.data.userSchema_4Index.edges[0].node.username);
+    setProfilePic(result.data.userSchema_4Index.edges[0].node.profilepic);
   }
   useEffect(() => { 
     fetchUsername();
@@ -73,6 +76,7 @@ function AccountDetails({ Address }){
       <div className='dropdown-content'> 
         <div className="dropdown-content">
           <div className="dropdown-detail">
+            <img src={`https://gateway.pinata.cloud/ipfs/${profilePic}`} alt="Profile" className="profile-img" />
             <p className="dropdown-title">{username}</p>
             <p className="dropdown-subtitle">{`${Address.slice(0, 6)}...${Address.slice(-4)}`}</p>
             <p className="dropdown-subtitle">{`${ethBalance} ETH`}</p>

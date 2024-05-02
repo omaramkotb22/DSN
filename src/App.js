@@ -330,8 +330,8 @@ const onFileChange = async (event) => {
               <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
               <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={createPostWithImage} onFileChange={onFileChange} currentAccount={currentAccount}/> : <Navigate to="/connect" />} />
               <Route path="/posts" element={isConnected ? <PostsDisplay/> : <Navigate to="/connect" />} />
-              <Route path="/communities" element={isConnected ? <Communities /> : <Navigate to="/connect" />} />
-              <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
+            <Route path="/communities" element={isConnected ? <Communities /> : <Navigate to="/connect" />} />
+`              <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
               <Route path="/users/:userAddress" element={<ViewUserProfile currentUser={currentAccount}/>} />
             </Routes>
         </Container>
