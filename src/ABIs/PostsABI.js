@@ -282,5 +282,4 @@ const PostsABI = [
     "type": "function"
   }
 ]
-
 export default PostsABI;

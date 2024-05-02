@@ -29,7 +29,6 @@ const ViewNotifications = ({ account }) => {
         }
       });
     };
-
     friendRequestContract.on('FriendRequestSent', updateNotifications);
 
     return () => {

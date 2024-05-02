@@ -63,5 +63,21 @@
 }
 
 small.text-muted-dark {
-    color: #FFCC99; /* New color */
+    color: #FFCC99; 
+}
+
+.card-image {
+    display: flex; 
+    flex-direction: row;
+}
+
+
+.has-no-friends {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    font-size: larger;
+    height: 100%;
+    color: #fff;
 }

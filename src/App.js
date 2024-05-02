@@ -19,6 +19,7 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import ViewUserProfile from './components/ViewUserProfile';
 import PostsABI from './ABIs/PostsABI';
 import ViewNotifications from './components/ViewNotifications';
+import Communities from './components/Communities';
 
 // Hooks 
 import { useEthereum } from './hooks/useEthereum';
@@ -140,22 +141,7 @@ const onFileChange = async (event) => {
       }
     }    
   };
-  const writePost = async () => {   // Call this function when the user clicks the "Add Post" button
-    if (!newPost.title || !newPost.content) return;
-    if (typeof window.ethereum !== 'undefined') {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(PostcontractAddress, PostsABI, signer);
-      const transaction = await contract.writePost(newPost.title, newPost.content);
-      await transaction.wait();
-      const postId = await contract.getLastPostId();
-      console.log("Writing Post");
-      handleDatabaseOnWritePost(postId.toString());
-      setNewPost({ title: '', content: '' }); // Reset form after submission
-      fetchPosts(); // Fetch all posts again to update UI
-    }
-  };
+
   const handleDatabaseOnWritePost = async (id) => {
     const client = new ApolloClient({
       uri: 'http://localhost:5005/graphql', 
@@ -342,9 +328,9 @@ const onFileChange = async (event) => {
               <Route path="/" element={isConnected ? (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />) : <Navigate to="/connect" />} />
               <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
               <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
-              <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={createPostWithImage} onFileChange={onFileChange}/> : <Navigate to="/connect" />} />
-              <Route path="/posts" element={isConnected ? <PostsDisplay posts={posts} fetchPosts={fetchPosts}/> : <Navigate to="/connect" />} />
-              <Route path="/communities" element={isConnected ? <div>Communities</div> : <Navigate to="/connect" />} />
+              <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={createPostWithImage} onFileChange={onFileChange} currentAccount={currentAccount}/> : <Navigate to="/connect" />} />
+              <Route path="/posts" element={isConnected ? <PostsDisplay/> : <Navigate to="/connect" />} />
+              <Route path="/communities" element={isConnected ? <Communities /> : <Navigate to="/connect" />} />
               <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
               <Route path="/users/:userAddress" element={<ViewUserProfile currentUser={currentAccount}/>} />
             </Routes>

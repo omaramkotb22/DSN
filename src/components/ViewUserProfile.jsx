@@ -13,7 +13,7 @@ function ViewUserProfile({ currentUser }) {
 
   const handleSendFriendRequest = async () => {
     try {
-      const friendRequestContractAddress = "0x93A397D35Bc703cde9dADd1C5b8F0Ae3AEfcbD61";
+      const friendRequestContractAddress = process.env.REACT_APP_FRIENDSHIP_CONTRACT_ADDRESS;
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner(); 
       const friendRequestContract = new ethers.Contract(friendRequestContractAddress, FriendRequestABI, signer);

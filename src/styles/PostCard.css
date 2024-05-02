@@ -1,0 +1,64 @@
+.post-card {
+    margin-top: 15px;
+    background-color: #2C2C2C; /* Slightly lighter than container for depth */
+    color: #ddd; /* Light text color for readability */
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adding shadow for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for hover */
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-body {
+    color: #333;
+}
+
+.card-title {
+    color: #0056b3;
+    font-weight: bold;
+}
+
+.card-text {
+    color: #fff; /* White text for content */
+}
+
+.like-button {
+    border-color: #555; /* Darker border for button */
+    color: #fff; /* White color for text and icon */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.like-button:hover {
+    background-color: #444; /* Dark background on hover */
+    color: #fb3958; /* Change icon color to something noticeable */
+}
+
+.bi-heart, .bi-heart-fill {
+    color: inherit; /* Ensure icon color matches the button text color */
+}
+
+.card-footer {
+    background-color: #222; /* Ensure footer matches card theme */
+    border-top: 1px solid #444; /* Slightly visible border */
+}
+
+small.text-muted-dark {
+    color: #FFCC99; 
+}
+
+.card-image {
+    align-self: flex-start; /* Align image to the left */
+    margin-top: 10px; /* Space from text */
+    margin-bottom: 10px;
+}
+
+.card-image img {
+    cursor: pointer;
+    border-radius: 10px;
+    max-width: 100px; /* Control the size of the image */
+}
