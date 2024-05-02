@@ -40,9 +40,11 @@ export async function fetchPostsAndLikes(currentAccount) {
 
 
 
-export async function fetchAllPosts() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const postContract = new ethers.Contract(process.env.REACT_APP_POSTS_CONTRACT_ADDRESS, PostsABI, provider);
+    const signer = provider.getSigner();
+    const postContract = new ethers.Contract(process.env.REACT_APP_POSTS_CONTRACT_ADDRESS, PostsABI, signer);
+
+export async function fetchAllPosts() {
 
     try {
         const postsData = await postContract.getPosts();
@@ -99,3 +101,97 @@ const getLikesForAPost = async (postID) => {
             return 0;
         }
     };
+
+
+
+
+export async function handleLikeService(index, postID, liked, setLiked) {
+        const message = ethers.utils.solidityKeccak256(['uint256', 'address', 'bool'], [index, await signer.getAddress(), !liked]);
+        const messageBytes = ethers.utils.arrayify(message);
+        const signature = await window.ethereum.request({
+            method: 'personal_sign',
+            params: [ethers.utils.hexlify(messageBytes), window.ethereum.selectedAddress]
+        });
+        try {
+            const tx = await postContract.likePost(index, !liked, signature);
+            await tx.wait();  // Wait for the Signature to be confirmed
+      
+            // If the transaction is successful, update the UI accordingly
+            updateLikesForAPost(postID, signature);
+            console.log('Like Signature:', signature);
+
+            setLiked(!liked); // Toggle the liked state
+
+        } catch (error) {
+            console.error('Error submitting like:', error);
+        }
+    };
+
+
+
+        const updateLikesForAPost = async (PostID, LikeHash) => {
+            console.log('Post ID:', PostID.toString());
+            // First, We need to query the post's ID assigned automatically by the database
+            // Since the update mutation requires the ID of the post
+            const query = gql`
+                query GetID($input: String!) {
+                postSchema_7Index(
+                    filters: {
+                    where:{
+                        PostID: {
+                        equalTo: $input
+                        }
+                    }
+                    }
+                    first:1){
+                        edges {
+                    node {
+                        id
+                        PostLikesHash
+                    }
+                    }
+                }
+                }`;
+            const result = await client.query({ 
+                query,
+                variables: {input: PostID.toString()}
+                });
+
+            console.log('Result:', result);
+            const id = result.data.postSchema_7Index.edges.edges[0].node.id;
+            const likes = result.data.postSchema_7Index.edges[0].node.PostLikesHash;
+            const likesCopy = [...likes, LikeHash];
+
+            // Now, we can update the likes array of the post
+            const updateMutation = gql`
+            mutation UpdatePostLikes($id: ID!, $PostID: String!, $PostLikesHash: [String!]!) {
+                updatePostSchema_7input: {
+                    id: $id
+                    content: {
+                        PostLikesHash: $PostLikesHash
+                    }
+                    options: {
+                        replace: true
+                    }
+                } {
+                    document {
+                        id
+                        PostLikesHash
+                    }
+                }
+            }`;
+            
+        try {
+            await client.mutate({ 
+                mutation: updateMutation,
+                variables: { 
+                    id: id, 
+                    PostID: PostID, 
+                    PostLikesHash: likesCopy // Correctly using likesCopy here
+                }
+            });
+        } catch (error) {
+            console.error("Error updating post likes:", error);
+        }
+        }
+                

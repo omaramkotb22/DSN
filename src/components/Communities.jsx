@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PostCard from './PostCard';
-import { fetchAllPosts } from '../services/PostServices'; // Assuming this service is correctly set up
+import { fetchAllPosts, handleLikeService } from '../services/PostServices'; // Assuming this service is correctly set up
 import { Modal } from 'react-bootstrap';
 
 function Communities() {
@@ -8,6 +8,8 @@ function Communities() {
     const [showModal, setShowModal] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
     const [likeCounts, setLikeCounts] = useState([]);
+    const [liked, setLiked] = useState(false);
+    
 
     useEffect(() => {
         const loadData = async () => {
@@ -36,8 +38,8 @@ function Communities() {
                     key={index}
                     post={post}
                     handleShowModal={() => handleShowModal(post.imageHash)}
-                    likeCounts={likeCounts[index]}
-                    handleLike={() => console.log("handleLike(index)")}
+                    likeCounts={likeCounts[index] || 0}
+                    handleLike={() => handleLikeService(index, post.id, liked, setLiked)}
                 />
             ))}
             <Modal show={showModal} onHide={handleCloseModal} centered>
