@@ -22,29 +22,29 @@
 }
 
 .card-text {
-    color: #fff; /* White text for content */
+    color: #fff; 
 }
 
 .like-button {
-    border-color: #555; /* Darker border for button */
-    color: #fff; /* White color for text and icon */
+    border-color: #555;
+    color: #fff;
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
 .like-button:hover {
-    background-color: #444; /* Dark background on hover */
-    color: #fb3958; /* Change icon color to something noticeable */
+    background-color: #444; 
+    color: #fb3958; 
 }
 
 .bi-heart, .bi-heart-fill {
-    color: inherit; /* Ensure icon color matches the button text color */
+    color: inherit; 
 }
 
 .card-footer {
-    background-color: #222; /* Ensure footer matches card theme */
-    border-top: 1px solid #444; /* Slightly visible border */
+    background-color: #222; 
+    border-top: 1px solid #444;
 }
 
 small.text-muted-dark {
@@ -52,13 +52,42 @@ small.text-muted-dark {
 }
 
 .card-image {
-    align-self: flex-start; /* Align image to the left */
-    margin-top: 10px; /* Space from text */
+    align-self: flex-start; 
+    margin-top: 10px; 
     margin-bottom: 10px;
 }
 
 .card-image img {
     cursor: pointer;
     border-radius: 10px;
-    max-width: 100px; /* Control the size of the image */
+    max-width: 100px; 
 }
+
+
+.like-button.liked {
+    background-color: #dc3545; 
+    color: white;
+    cursor: not-allowed;
+  }
+  
+
+  .like-button {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  }
+  
+  .like-button.liked {
+    background-color: #dc3545; 
+    color: white;
+    cursor: not-allowed;
+  }
+  
+  .like-button:hover {
+    background-color: #007bff; 
+    color: white;
+  }
+  
+  .like-button:disabled {
+    background-color: #6c757d;
+    color: white;
+    cursor: not-allowed;
+  }

@@ -10,12 +10,12 @@ const client = new ApolloClient({
     cache: new InMemoryCache()
 });
 
-export async function fetchPostsAndLikes(currentAccount) {
+export async function fetchPostsAndLikes(currentAccount) { // current account is the ethereum address of the user.
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const postContract = new ethers.Contract(process.env.REACT_APP_POSTS_CONTRACT_ADDRESS, PostsABI, provider);
     const friendContract = new ethers.Contract(process.env.REACT_APP_FRIENDSHIP_CONTRACT_ADDRESS, FriendRequestABI, provider);
     
-    try {
+    try { 
         const friends = await friendContract.getFriends(currentAccount);
         const postsData = await postContract.getPosts();
 
@@ -24,8 +24,8 @@ export async function fetchPostsAndLikes(currentAccount) {
         }
 
         const friendAddresses = friends.map(friend => friend.toLowerCase());
+        console.log('Friend Addresses:', friendAddresses);
         const filteredPosts = postsData.filter(post => friendAddresses.includes(post.author.toLowerCase()));
-
         const likeCounts = await Promise.all(filteredPosts.map(async post => {
             const likeCount = await getLikesForAPost(post.id.toString(), provider); // Assuming getLikesForAPost function exists
             return likeCount.length;
@@ -89,6 +89,8 @@ const getLikesForAPost = async (postID) => {
             });    
             if (result.data.postSchema_7Index.edges.length > 0 && result.data.postSchema_7Index.edges[0].node) {
                 const likeCounts = result.data.postSchema_7Index.edges[0].node.PostLikesHash.length;
+                console.log('Post ID:', postID);
+                console.log('Like Counts:', likeCounts);
                 return likeCounts;
 
             } else {
@@ -117,7 +119,7 @@ export async function handleLikeService(index, postID, liked, setLiked) {
             await tx.wait();  // Wait for the Signature to be confirmed
       
             // If the transaction is successful, update the UI accordingly
-            updateLikesForAPost(postID, signature);
+            await updateLikesForAPost(postID.toString(), signature);
             console.log('Like Signature:', signature);
 
             setLiked(!liked); // Toggle the liked state
@@ -154,28 +156,33 @@ export async function handleLikeService(index, postID, liked, setLiked) {
                 }`;
             const result = await client.query({ 
                 query,
-                variables: {input: PostID.toString()}
+                variables: {
+                    input: PostID.toString() // Correctly using PostID.toString() here
+                }
                 });
 
             console.log('Result:', result);
-            const id = result.data.postSchema_7Index.edges.edges[0].node.id;
+            const id = result.data.postSchema_7Index.edges[0].node.id;
             const likes = result.data.postSchema_7Index.edges[0].node.PostLikesHash;
             const likesCopy = [...likes, LikeHash];
-
+            console.log('Old Likes', likes);
+            console.log('Likes:', likesCopy);
             // Now, we can update the likes array of the post
             const updateMutation = gql`
             mutation UpdatePostLikes($id: ID!, $PostID: String!, $PostLikesHash: [String!]!) {
-                updatePostSchema_7input: {
+                updatePostSchema_7(input: {
                     id: $id
                     content: {
+                        PostID: $PostID,
                         PostLikesHash: $PostLikesHash
                     }
                     options: {
                         replace: true
                     }
-                } {
+                }) {
                     document {
                         id
+                        PostID
                         PostLikesHash
                     }
                 }

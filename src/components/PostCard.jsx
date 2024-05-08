@@ -3,7 +3,7 @@ import { Card, Button } from "react-bootstrap";
 import 'bootstrap-icons/font/bootstrap-icons.css'; 
 
 import '../styles/PostCard.css';
-function PostCard({ post, index, handleLike, handleShowModal, liked, likeCounts }) {
+function PostCard({ post, index, handleLike, handleShowModal, liked, likeCounts, disabled }) {
     return (
         <Card key={index} className="post-card">
             <Card.Body>
@@ -20,11 +20,12 @@ function PostCard({ post, index, handleLike, handleShowModal, liked, likeCounts 
                     </div>
                 )}
                 <Button
-                    variant='outline-light'
-                    className='like-button'
-                    onClick={() => handleLike(index)}
+                variant={disabled ? 'secondary' : 'primary'}
+                onClick={handleLike}
+                disabled={disabled}
+                className={`like-button ${disabled ? 'liked' : ''}`}
                 >
-                    <i className={`bi ${liked ? 'bi-heart-fill' : 'bi-heart'}`}></i> {likeCounts}
+                <i className={`bi ${disabled ? 'bi-heart-fill' : 'bi-heart'}`}></i>{likeCounts}
                 </Button>
             </Card.Body>
             <Card.Footer style={{ marginTop: '15px' }}>

@@ -67,12 +67,12 @@
     background-color: #0D6EFD;
     color: #ffffff;
     border-color: #0D6EFD;
-    transform: translateY(-2px); /* Subtle lift effect */
+    transform: translateY(-2px); 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
 }
 
 .bi-clipboard, .bi-check-lg {
-    margin-right: 5px; /* Icon spacing */
+    margin-right: 5px; 
 }
 
 

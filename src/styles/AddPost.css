@@ -1,0 +1,35 @@
+.add-post-card {
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .add-post-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .add-post-form-control {
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .add-post-form-control:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 0 0.2rem rgba(0,86,179,0.25);
+  }
+  
+  .add-post-btn {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  
+  .add-post-btn:hover {
+    background-color: #004494;
+    border-color: #003570;
+  }
+  
+  .add-post-btn:active {
+    background-color: #003570;
+    border-color: #002851;
+    box-shadow: 0 0 0 0.1rem rgba(0,86,179,0.5);
+  }
+  
+  button:active {
+    user-select: none;
+  }

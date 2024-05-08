@@ -2,21 +2,37 @@ import React, { useState } from 'react';
 import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-import { addImagetoIPFS } from '../services/IPFSImagesService';
+import axios from 'axios';
 
 function CreateProfile({ onCreateProfile, account }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [profilePic, setProfilePic] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const ipfsHash = await addImagetoIPFS(file);
-      setProfilePic(ipfsHash);
+      const formData = new FormData();
+      formData.append('file', file);
+      setIsUploading(true);
+
+      try {
+        const response = await axios.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {
+          headers: {
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIxNWUzNWI0ZC0wM2NhLTQxZDEtODY4MS0xMGQwOGJiZjAyZjQiLCJlbWFpbCI6Im9tYXJhbWtvdGIyMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiYjg3NGQyZTljN2MyMzRlZGQ4MDUiLCJzY29wZWRLZXlTZWNyZXQiOiJhMWQyMjg1OTc4MWNiMTI2OTU0MGZiZjNiZWJjNDViOTg4NjQxYThjZDg5YjMwMzJiZTU1Yjg1NWEwMjAwOTA2IiwiaWF0IjoxNzE1MDkwNzM0fQ.wQ_sas27PXBLOsshnA1bU14ATVv2VKnYtGvNUNjOuTQ`
+          }
+        });
+        setProfilePic(response.data.IpfsHash);
+        setIsUploading(false);
+        console.log('File uploaded to IPFS. Hash:', response);
+      } catch (error) {
+        console.error('Error uploading file to IPFS:', error);
+      }
     }
   };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -83,13 +99,14 @@ function CreateProfile({ onCreateProfile, account }) {
             <Form.Control type="file" onChange={handleFileChange} />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
-            Create Profile
+          <Button variant="primary" type="submit" disabled={!profilePic || isUploading}>
+            {isUploading ? 'Uploading...' : 'Create Profile'}
           </Button>
         </Form>
       </Card>
     </Container>
   );
 }
+
 
 export default CreateProfile;

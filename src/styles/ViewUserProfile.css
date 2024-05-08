@@ -11,8 +11,8 @@
 }
 
 .view-user-container:hover {
-    transform: translateY(-5px); /* Slight rise on hover */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); 
 }
 
 .view-user-h2 {
@@ -38,11 +38,17 @@
 
 .button:hover {
     background-color: #0b5ed7;
-    transform: scale(1.05); /* Slight scale for interactive feedback */
+    transform: scale(1.05); 
 }
 
 .status-message {
     color: #0D6EFD;
     font-style: italic;
     margin-top: 10px;
+}
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
 }

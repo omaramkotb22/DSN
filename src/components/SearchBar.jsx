@@ -30,6 +30,7 @@ function SearchBar() {
               userAddress
               username
               bio
+              profilepic
             }
           }
         }
@@ -43,7 +44,8 @@ function SearchBar() {
         const user = result.data.userSchema_4Index.edges[0].node; // Get the first user with the same username
         navigate(`/users/${user.userAddress}`, { state: { user } });
       } else {
-        console.log("No user found.");
+          alert("User not found");
+        
       }
     } catch (error) {
       console.error("Search error:", error);

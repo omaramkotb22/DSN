@@ -9,6 +9,7 @@ function Communities() {
     const [selectedImage, setSelectedImage] = useState('');
     const [likeCounts, setLikeCounts] = useState([]);
     const [liked, setLiked] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState({});
     
 
     useEffect(() => {
@@ -21,6 +22,18 @@ function Communities() {
         };
         loadData();
     }, []);
+
+    const handleLikeClick = (index, postID) => {
+        if (!buttonDisabled[index]) {
+            handleLikeService(index, postID, likeCounts, setLikeCounts, setButtonDisabled);
+            // Increment like count locally
+            const updatedLikeCounts = [...likeCounts];
+            updatedLikeCounts[index] = updatedLikeCounts[index] ? updatedLikeCounts[index] + 1 : 1;
+            setLikeCounts(updatedLikeCounts);
+            // Disable button to prevent multiple likes
+            setButtonDisabled({ ...buttonDisabled, [index]: true });
+        }
+    };
 
     const handleShowModal = (imageHash) => {
         setSelectedImage(`https://gateway.pinata.cloud/ipfs/${imageHash}`);
@@ -39,7 +52,8 @@ function Communities() {
                     post={post}
                     handleShowModal={() => handleShowModal(post.imageHash)}
                     likeCounts={likeCounts[index] || 0}
-                    handleLike={() => handleLikeService(index, post.id, liked, setLiked)}
+                    handleLike={() => handleLikeClick(index, post.id)}
+                    disabled={buttonDisabled[index]}
                 />
             ))}
             <Modal show={showModal} onHide={handleCloseModal} centered>

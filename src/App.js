@@ -46,7 +46,6 @@ function App() {
 
     const metadata = JSON.stringify({
         name: file.name,
-        keyvalues: { exampleKey: 'exampleValue' }
     });
     formData.append('pinataMetadata', metadata);
 
@@ -59,7 +58,7 @@ function App() {
         const response = await axios.post(url, formData, {
             headers: {
                 'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
-                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIxNWUzNWI0ZC0wM2NhLTQxZDEtODY4MS0xMGQwOGJiZjAyZjQiLCJlbWFpbCI6Im9tYXJhbWtvdGIyMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNDEwMDZlMzY4NDA0MTYxNjI2OTIiLCJzY29wZWRLZXlTZWNyZXQiOiJmZjczMjY3NTVhYmNlYjdhMDdjZWY0MWU1ZDljYTYxYjFkYzZhYTAyNGM3MjcxYzIyOWI3ZWZlYmY1YjI3Y2Y2IiwiaWF0IjoxNzE0NTIwNzQzfQ.RKDHFjyvDHy6ww0HqpuKNItyNIKNso_SXTHegeRec8w`
+                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIxNWUzNWI0ZC0wM2NhLTQxZDEtODY4MS0xMGQwOGJiZjAyZjQiLCJlbWFpbCI6Im9tYXJhbWtvdGIyMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiYjg3NGQyZTljN2MyMzRlZGQ4MDUiLCJzY29wZWRLZXlTZWNyZXQiOiJhMWQyMjg1OTc4MWNiMTI2OTU0MGZiZjNiZWJjNDViOTg4NjQxYThjZDg5YjMwMzJiZTU1Yjg1NWEwMjAwOTA2IiwiaWF0IjoxNzE1MDkwNzM0fQ.wQ_sas27PXBLOsshnA1bU14ATVv2VKnYtGvNUNjOuTQ`
             }
         });
         console.log('IPFS response:', response.data);
@@ -70,7 +69,7 @@ function App() {
     }
 };
 
-// Include this function in the part where you handle post creation
+
 const onFileChange = async (event) => {
       const file = event.target.files[0];
       const imageHash = await handleFileUpload(file);
@@ -78,7 +77,7 @@ const onFileChange = async (event) => {
       if (imageHash) {
           const title = newPost.title;
           const content = newPost.content;
-          await createPostWithImage(title, content, imageHash); // Assume createPostWithImage is a function that handles posting
+          await createPostWithImage(title, content, imageHash); // Handles the Posting
       } else {
           console.error('Failed to upload image to IPFS');
       }
@@ -108,24 +107,7 @@ const onFileChange = async (event) => {
     }
 };
   
-  // useEffect(() => {
-  //   const checkIfWalletIsConnected = async () => {
-  //     const { ethereum } = window;
-  //     if (ethereum) {
-  //       console.log("We have the ethereum object", ethereum);
-  //       try {
-  //         const accounts = await ethereum.request({ method: 'eth_accounts' });
-  //         if (accounts.length > 0) {
-  //           setCurrentAccount(accounts[0]);
-  //           setIsConnected(true);
-  //         }
-  //       } catch (err) {
-  //         console.error(err);
-  //       }
-  //     }
-  //   };
-  //   checkIfWalletIsConnected();
-  // }, []);
+
 
   const fetchPosts = async () => {   // Fetch posts from the blockchain
 
@@ -296,7 +278,6 @@ const onFileChange = async (event) => {
 
 
   return (
-
     <Router styles={styles.appContainer}>
       {(isConnected && !isNewUser) &&  
       <div style={styles.headerContainer}>
@@ -318,10 +299,6 @@ const onFileChange = async (event) => {
         </div>
       </div>
     }
-
-    
-    
-
       <div>
         <Container style={{ ...styles.mainContainer, marginLeft: sidebarOpen ? '250px' : '0px' }}>
             <Routes>
@@ -329,9 +306,9 @@ const onFileChange = async (event) => {
               <Route path="/connect" element={!isConnected ? <ConnectWalletButton onConnect={requestAccount} account={currentAccount} isNewUser={isNewUser}/> : (isNewUser ? <Navigate to="/create-profile" /> : <Navigate to="/posts" />)} />
               <Route path="/create-profile" element={isConnected && isNewUser ? <CreateProfile onCreateProfile={() => {setIsConnected(true); setIsNewUser(false)} } account={currentAccount}/> : <Navigate to="/posts" />} />
               <Route path="/add-post" element={isConnected ? <AddPostForm newPost={newPost} setNewPost={setNewPost} onWritePost={createPostWithImage} onFileChange={onFileChange} currentAccount={currentAccount}/> : <Navigate to="/connect" />} />
-              <Route path="/posts" element={isConnected ? <PostsDisplay/> : <Navigate to="/connect" />} />
-            <Route path="/communities" element={isConnected ? <Communities /> : <Navigate to="/connect" />} />
-`              <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
+              <Route path="/posts" element={isConnected ? <PostsDisplay currentAccount={currentAccount}/> : <Navigate to="/connect" />} />
+              <Route path="/communities" element={isConnected ? <Communities /> : <Navigate to="/connect" />} />
+              <Route path="/profile" element={isConnected ? <Profile currentUser={currentAccount}/> : <Navigate to="/posts" />} />
               <Route path="/users/:userAddress" element={<ViewUserProfile currentUser={currentAccount}/>} />
             </Routes>
         </Container>

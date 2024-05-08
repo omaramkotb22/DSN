@@ -80,7 +80,7 @@ ComposeDB and Ceramic treat schemas as immutable once published. Therefore, any 
 
 - In the Root Directory Run Command: 
 
-    - ```yarn add```
+    - ```yarn install``
 
     - ``` yarn start ```
 

@@ -7,12 +7,8 @@ function Profile({ currentUser }) {
     const [friendCount, setFriendCount] = useState(0);
     const [profileImageUrl, setProfileImageUrl] = useState('');
     const [username, setUsername] = useState('');
-    const [posts, setPosts] = useState([
-        { id: 1, content: 'Post 1 content here...' },
-        { id: 2, content: 'Post 2 content here...' },
-        { id: 3, content: 'Post 3 content here...' }
-    ]);
-
+    const [bio, setBio] = useState('');
+    const [userAddress, setuserAddress] = useState('');
     const client = new ApolloClient({
         uri: 'http://localhost:5005/graphql',
         cache: new InMemoryCache()
@@ -33,6 +29,7 @@ function Profile({ currentUser }) {
               edges {
                 node {
                   id
+                  bio
                   username
                   userAddress
                   profilepic
@@ -51,6 +48,8 @@ function Profile({ currentUser }) {
             const userNode = result.data.userSchema_4Index.edges[0].node;
             setUsername(userNode.username);
             setProfileImageUrl(userNode.profilepic);
+            setBio(userNode.bio);
+            setuserAddress(userNode.userAddress);
         }
     };
 
@@ -60,15 +59,12 @@ function Profile({ currentUser }) {
 
     return (
         <Card className="profile-card">
-            <img src={profileImageUrl} alt="Profile" className="profile-img" />
+            <img src={`https://gateway.pinata.cloud/ipfs/${profileImageUrl}`} alt="Profile" className="profile-img" />
             <div className="profile-details">
                 <div className="profile-title">{username}</div>
-                <div className="profile-subtitle">Friends: {friendCount}</div>
-                <ListGroup className="list-group-flush">
-                    {posts.map(post => (
-                        <ListGroupItem key={post.id}>{post.content}</ListGroupItem>
-                    ))}
-                </ListGroup>
+                <div className="profile-subtitle">{bio}</div>
+                <div className="profile-subtitle">{userAddress}</div>
+                <div className="profile-subtitle"></div>
             </div>
         </Card>
     );

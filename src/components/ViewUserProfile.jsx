@@ -5,12 +5,13 @@ import { Button } from 'react-bootstrap';
 import FriendRequestABI from '../ABIs/FriendRequestABI';
 import { sendFriendRequest } from '../services/FriendRequestService';
 import '../styles/ViewUserProfile.css';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 function ViewUserProfile({ currentUser }) {
   const { state } = useLocation();
   const { user } = state;
   const [status, setStatus] = useState('');
-
+  const [requestSent, setRequestSent] = useState(false); 
   const handleSendFriendRequest = async () => {
     try {
       const friendRequestContractAddress = process.env.REACT_APP_FRIENDSHIP_CONTRACT_ADDRESS;
@@ -29,12 +30,21 @@ function ViewUserProfile({ currentUser }) {
     }
   };
 
+
   return (
     <div className='view-user-container'>
+      <img src={user.profilepic} alt={user.username} className='profile-img' />
       <h2 className='view-user-h2'>{user.username}</h2>
       <p className='view-user-p'>{user.bio}</p>
       <p>{user.userAddress}</p>
-      <Button onClick={handleSendFriendRequest} variant="light" className='view-user-button'>Request</Button>
+      <Button 
+        onClick={handleSendFriendRequest} 
+        variant="light" 
+        className='view-user-button' 
+        disabled={requestSent} 
+      >
+        {requestSent ? 'Requested' : 'Request'}
+      </Button>
       <p className="status-message">{status}</p>
     </div>
   );

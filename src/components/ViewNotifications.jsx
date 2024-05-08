@@ -9,6 +9,7 @@ const ViewNotifications = ({ account }) => {
   const [notifications, setNotifications] = useState([]);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
+  
   const friendRequestContract = new ethers.Contract(friendRequestContractAddress, FriendRequestABI, signer);
 
   useEffect(() => {
@@ -28,6 +29,8 @@ const ViewNotifications = ({ account }) => {
           console.log(`You have a new friend request from: ${requester} with Request ID: ${requestId}`);
         }
       });
+
+
     };
     friendRequestContract.on('FriendRequestSent', updateNotifications);
 
@@ -37,9 +40,10 @@ const ViewNotifications = ({ account }) => {
     };
   }, [account]); // Reinitialize when account changes
 
-  const handleAccept = (notificationId) => {
+  const handleAccept = async (notificationId) => {
     console.log('Accepting request:', notificationId);
     setNotifications(notifications.filter(notification => notification.id !== notificationId));
+    await friendRequestContract.confirmFriendship(notificationId);
   };
 
   const handleReject = (notificationId) => {
@@ -47,6 +51,9 @@ const ViewNotifications = ({ account }) => {
     
     
     setNotifications(notifications.filter(notification => notification.id !== notificationId));
+  };
+  const shortenAddress = (address) => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4, address.length)}`;
   };
 
   return (
@@ -58,8 +65,8 @@ const ViewNotifications = ({ account }) => {
         {notifications.map((notification, index) => (
           <ViewRequest
             key={index}
-            username={notification.requester} // Assuming you want to display the requester's address
-            onAccept={() => handleAccept(notification.id)}
+            username={shortenAddress(notification.requester)} 
+            onAccept={() => handleAccept(notification.requester)}
             onReject={() => handleReject(notification.id)}
           />
         ))}

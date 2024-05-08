@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import PostCard from './PostCard';
-import { fetchPostsAndLikes } from '../services/PostServices'; // Assuming this service is correctly set up
+import { fetchPostsAndLikes, handleLikeService } from '../services/PostServices'; // Assuming this service is correctly set up
 import { Link } from 'react-router-dom';
 import '../styles/PostsDisplay.css';
 function PostsDisplay({ currentAccount }) {
+    console.log('Current Account:', currentAccount);
     const [posts, setPosts] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
     const [likeCounts, setLikeCounts] = useState([]);
     const [hasNoFriends, setHasNoFriends] = useState(false);
-
+    const [buttonDisabled, setButtonDisabled] = useState({});
 
     useEffect(() => {
         const loadData = async () => {
@@ -33,6 +34,17 @@ function PostsDisplay({ currentAccount }) {
         setShowModal(false);
     };
 
+    const handleLikeClick = (index, postID) => {
+        if (!buttonDisabled[index]) {
+            handleLikeService(index, postID, likeCounts, setLikeCounts, setButtonDisabled);
+            // Increment like count locally
+            const updatedLikeCounts = [...likeCounts];
+            updatedLikeCounts[index] = updatedLikeCounts[index] ? updatedLikeCounts[index] + 1 : 1;
+            setLikeCounts(updatedLikeCounts);
+            // Disable button to prevent multiple likes
+            setButtonDisabled({ ...buttonDisabled, [index]: true });
+        }
+    };
 
     if (hasNoFriends) {
         return (
@@ -50,6 +62,7 @@ function PostsDisplay({ currentAccount }) {
                     key={index}
                     post={post}
                     handleShowModal={() => handleShowModal(post.imageHash)}
+                    handleLike={() => handleLikeClick(index, post.id)}
                     likeCounts={likeCounts[index] || 0}
                 />
             ))}

@@ -19,7 +19,7 @@ function AccountDetails({ Address }){
     const queryUsername = gql`
       query Find($input: String!) {
         userSchema_4Index(
-          filters: {
+          filters: {  
             where: {
               userAddress: {
                 equalTo: $input 
@@ -45,7 +45,10 @@ function AccountDetails({ Address }){
       }
     });
     setUsername(result.data.userSchema_4Index.edges[0].node.username);
+    console.log(result.data.userSchema_4Index.edges[0].node.username);
     setProfilePic(result.data.userSchema_4Index.edges[0].node.profilepic);
+    console.log(result.data.userSchema_4Index.edges[0].node.profilepic);
+    console.log(profilePic);
   }
   useEffect(() => { 
     fetchUsername();
