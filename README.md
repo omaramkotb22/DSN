@@ -34,23 +34,23 @@ In the Terminal:
 
 - Command to create your Composite
     
-    ```composedb composite:create PostSchema_2.graphql --output=PostSchema_2-composite.json --did-private-key=your-private-key```
+    ```composedb composite:create Schema_Name.graphql --output=Schema-composite.json --did-private-key=your-private-key```
 
 - Command to deploy your Composite
-    ``` composedb composite:deploy --output=PostSchema_2-composite.json --ceramic-url=http://localhost:7007 --did-private-key=your-private-key ```
+    ``` composedb composite:deploy --output=Schema-composite.json --ceramic-url=http://localhost:7007 --did-private-key=your-private-key ```
 
 - Command to merge the Composite
 
 ``` composedb composite:merge composite_1.json composite_2.json --output=name-of-your-merged-composite.json```
 - Command to compile your Composite
 
-    ``` composedb composite:compile PostSchema_2-composite.json runtime-PostSchema-composite.json ```
+    ``` composedb composite:compile Schema-composite.json runtime-PostSchema-composite.json ```
 ￼
 - Command to start the GraphQL Server
 
     ``` composedb graphql:server --ceramic-url=http://localhost:7007 --graphiql runtime-post-schema-composite.json --did-private-key=your-private-key --port=5005```
 
-ComposeDB and Ceramic treat schemas as immutable once published. Therefore, any change results in a new schema version. Make sure your application handles schema versioning appropriately.
+Note: ComposeDB and Ceramic treat schemas as immutable once published. Therefore, any change results in a new schema version. Make sure your application handles schema versioning appropriately.
 
 ### Smart Contracts
 
